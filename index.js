@@ -39,6 +39,6 @@ form.onsubmit = function (e) {
   e.preventDefault();
   let formProduct = new ProductsController(form[0].value, form[1].value, form[2].value, form[3].value, form[4].value)
   console.log('formProduct: ' + formProduct);
-
+  save(JSON.stringify(formProduct));
   document.getElementById('result').innerHTML = `New product added:&nbsp Name: <strong><em>${formProduct.name}</strong></em>&nbsp Type: <strong><em>${formProduct.type}</em></strong>&nbsp Seat(s): <em><strong>${formProduct.seats}</em></strong>&nbsp Description: <strong><em>${formProduct.description}</em></strong>&nbsp Image URL: <em><strong>${formProduct.imageURL}</em></strong>`
 }
