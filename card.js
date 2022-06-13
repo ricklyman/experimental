@@ -29,7 +29,9 @@ const makeRequest = async () => {
     try{
         //let response = await fetch("https://reqres.in/api/users"); //https://reqres.in/api/users/23
 		let response = await localStorage.getItem("https://reqres.in/api/users");
-        console.log('A: ' + Object.keys(response));		
+        console.log('A: ' + Object.keys(response));
+ /*        response.ok = true; //temp
+        response.status = "200"; //temp		
         if(!response.ok){
 			console.log('B: ' + Object.keys(response));
 			if(response.status == '404') {
@@ -39,20 +41,22 @@ const makeRequest = async () => {
 			}
             throw new Error(`There was an error with status of ${response.status}`)
         }
-        let usersJson = response.json();
-		//console.log('usersJson B: ' + usersJson);
+   */     // let usersJson = response.json();
+   let usersJson = JSON.parse(response);
+		console.log('usersJson B: ' + usersJson);
         return usersJson;
     }
     catch(error){
-        //console.log(error);
-		if(response.status == '404') {
-			let elem = document.getElementById('displayUsers');
-            card.innerHTML = '</h1>Page not found: ' + response.status + '</h1>';
-            elem.append(card);	
-			}
-       //card.innerHTML =  '</h1>' + error + '</h1>';
-       //elem.append(card);	
-       throw new Error(`There was an error with status of ${response.status}`)
+    //     //console.log(error);
+	// 	if(response.status == '404') {
+	// 		let elem = document.getElementById('displayUsers');
+    //         card.innerHTML = '</h1>Page not found: ' + response.status + '</h1>';
+    //         elem.append(card);	
+	// 		}
+    //    //card.innerHTML =  '</h1>' + error + '</h1>';
+    //    //elem.append(card);	
+    //throw new Error(`There was an error with status of ${response.status}`)   
+    throw new Error(`There was an error with status of ${error}`)
     }
 }
 
