@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<!-- saved from url=(0081)http://static.diveintojavascript.com/tutorials/web-storage-players/players.html -->
+<HTML><HEAD><META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<META charset="utf-8">
+	<TITLE>players</TITLE>
+	
+	<STYLE>
+		a { color: #0068D2; cursor: pointer; }
+		a:link, a:visited { text-decoration: none; color: #0068D2; }
+		a:hover, a:active { text-decoration: underline; color: #0068D2; }
+		body { font: 12px/18px "Lucida Grande", "Lucida Sans Unicode", sans-serif; }
+
+		#players-table { border-collapse: collapse; }
+		#players-table, #players-table th, #players-table td { padding: 8px 16px; text-align: left; border: 0px solid #B9BABE; }
+		#players-table th { font-weight: bold; font-size: 14px; color: #29344B; }
+		#players-table td { color: #000; }
+		#players-table tr:nth-child(2n) { background: #E8EDFF; }
+
+		#players-form { padding: 10px; }
+		.text input, .button input { padding: 5px; margin: 0; border: 1px solid #ccc; -moz-border-radius: 2px; -webkit-border-radius: 2px; border-radius: 2px; }
+		#players-form .item { margin: 3px 0; }
+		#players-form label, #players-form .field { display: inline-block; color: #0C0B07; }
+		#players-form label { width: 110px; font-weight: bold; text-align: right; color: #666; }
+		#players-form .text input { width: 176px; padding: 3px; }
+		#players-form .button { display: inline-block; }
+		#players-form .button-wrapper { padding-left: 113px; }
+		.button input { padding: 4px 8px; color: #343434; background-color: #fdfdfd; background: -moz-linear-gradient(#fdfdfd, #e1e1e1); background: -webkit-gradient(linear, 0 0, 0 100%, from(#fdfdfd), to(#e1e1e1)); }
+		.button-default input { font-weight: bold; color: #fff; background-color: #7ca0c7; background: -moz-linear-gradient(#acc6e1, #7ca0c7); background: -webkit-gradient(linear, 0 0, 0 100%, from(#acc6e1), to(#7ca0c7)); border-color: #5b80b2; }
+	</STYLE>
+</HEAD><BODY>
+	<H1>players</H1>
+	<TABLE id="players-table">
+		<TBODY><TR id="players-head">
+			<TH>ID</TH>
+			<TH>Name</TH>
+			<TH>Age</TH>
+			<TH>Years of Experience</TH>
+            <TH>Rating</TH>
+			<TH>Actions</TH>
+		</TR>
+	</TBODY></TABLE>
+
+	<FORM id="players-form">
+		<DIV class="item text">
+			<LABEL>Name:</LABEL>
+			<DIV class="field"><INPUT type="text" name="name"></DIV>
+		</DIV>
+		<DIV class="item text">
+			<LABEL>Age:</LABEL>
+			<DIV class="field"><INPUT type="text" name="age"></DIV>
+		</DIV>
+		<DIV class="item text">
+			<LABEL>Years of Experience:</LABEL>
+			<DIV class="field"><INPUT type="text" name="years_of_experience"></DIV>
+		</DIV>
+		<DIV class="item text">
+			<LABEL>Rating:</LABEL>
+			<DIV class="field"><INPUT type="text" name="rating"></DIV>
+		</DIV>
+
+		<DIV class="button-wrapper">
+			<DIV class="item button">
+				<DIV class="field"><INPUT type="button" id="players-op-discard" value="Discard"></DIV>
+			</DIV>
+			<DIV class="item button button-default">
+				<DIV class="field"><INPUT type="submit" id="players-op-save" value="Save"></DIV>
+			</DIV>
+		</DIV>
+		<INPUT type="hidden" name="id_entry" value="0">
+	</FORM>
+
+	<SCRIPT>
+		var players = {
+			index: window.localStorage.getItem("players:index"),
+			$table: document.getElementById("players-table"),
+			$form: document.getElementById("players-form"),
+			$button_save: document.getElementById("players-op-save"),
+			$button_discard: document.getElementById("players-op-discard"),
+
+			init: function() {
+				// initialize storage index
+				if (!players.index) {
+					window.localStorage.setItem("players:index", players.index = 1);
+				}
+
+				// initialize form
+				players.$form.reset();
+				players.$button_discard.addEventListener("click", function(event) {
+					players.$form.reset();
+					players.$form.id_entry.value = 0;
+				}, true);
+				players.$form.addEventListener("submit", function(event) {
+					var entry = {
+						id: parseInt(this.id_entry.value),
+						name: this.name.value,
+						age: this.age.value,
+						years_of_experience: this.years_of_experience.value,
+                        rating: this.rating
+					};
+					if (entry.id == 0) { // add
+						players.storeAdd(entry);
+						players.tableAdd(entry);
+					}
+					else { // edit
+						players.storeEdit(entry);
+						players.tableEdit(entry);
+					}
+
+					this.reset();
+					this.id_entry.value = 0;
+					event.preventDefault();
+				}, true);
+
+				// initialize table
+				if (window.localStorage.length - 1) {
+					var players_list = [], i, key;
+					for (i = 0; i < window.localStorage.length; i++) {
+						key = window.localStorage.key(i);
+						if (/players:\d+/.test(key)) {
+							players_list.push(JSON.parse(window.localStorage.getItem(key)));
+						}
+					}
+
+					if (players_list.length) {
+						players_list
+							.sort(function(a, b) {
+								return a.id < b.id ? -1 : (a.id > b.id ? 1 : 0);
+							})
+							.forEach(players.tableAdd);
+					}
+				}
+				players.$table.addEventListener("click", function(event) {
+					var op = event.target.getAttribute("data-op");
+					if (/edit|remove/.test(op)) {
+						var entry = JSON.parse(window.localStorage.getItem("players:"+ event.target.getAttribute("data-id")));
+						if (op == "edit") {
+							players.$form.name.value = entry.name;
+							players.$form.age.value = entry.age;
+							players.$form.years_of_experience.value = entry.years_of_experience;
+                            players.$form.rating.value = entry.rating;
+							players.$form.id_entry.value = entry.id;
+						}
+						else if (op == "remove") {
+							if (confirm('Are you sure you want to remove "'+ entry.name +' '+ entry.age +'" from your players?')) {
+								players.storeRemove(entry);
+								players.tableRemove(entry);
+							}
+						}
+						event.preventDefault();
+					}
+				}, true);
+			},
+
+			storeAdd: function(entry) {
+				entry.id = players.index;
+				window.localStorage.setItem("players:index", ++players.index);
+				window.localStorage.setItem("players:"+ entry.id, JSON.stringify(entry));
+			},
+			storeEdit: function(entry) {
+				window.localStorage.setItem("players:"+ entry.id, JSON.stringify(entry));
+			},
+			storeRemove: function(entry) {
+				window.localStorage.removeItem("players:"+ entry.id);
+			},
+
+			tableAdd: function(entry) {
+				var $tr = document.createElement("tr"), $td, key;
+				for (key in entry) {
+					if (entry.hasOwnProperty(key)) {
+						$td = document.createElement("td");
+						$td.appendChild(document.createTextNode(entry[key]));
+						$tr.appendChild($td);
+					}
+				}
+				$td = document.createElement("td");
+				$td.innerHTML = '<a data-op="edit" data-id="'+ entry.id +'">Edit</a> | <a data-op="remove" data-id="'+ entry.id +'">Remove</a>';
+				$tr.appendChild($td);
+				$tr.setAttribute("id", "entry-"+ entry.id);
+				players.$table.appendChild($tr);
+			},
+			tableEdit: function(entry) {
+				var $tr = document.getElementById("entry-"+ entry.id), $td, key;
+				$tr.innerHTML = "";
+				for (key in entry) {
+					if (entry.hasOwnProperty(key)) {
+						$td = document.createElement("td");
+						$td.appendChild(document.createTextNode(entry[key]));
+						$tr.appendChild($td);
+					}
+				}
+				$td = document.createElement("td");
+				$td.innerHTML = '<a data-op="edit" data-id="'+ entry.id +'">Edit</a> | <a data-op="remove" data-id="'+ entry.id +'">Remove</a>';
+				$tr.appendChild($td);
+			},
+			tableRemove: function(entry) {
+				players.$table.removeChild(document.getElementById("entry-"+ entry.id));
+			}
+		};
+		players.init();
+	</SCRIPT>
+
+
+</BODY></HTML>

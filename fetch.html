@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fetch</title>
+</head>
+<html lang="en">
+<body>
+    <h3>wip : https://jasonwatmore.com/post/2021/09/21/fetch-http-delete-request-examples</h3>
+    <div id='delete-request'>...</div><button onclick="deleteRequest()">deleteRequest</button>
+    <div id='delete-request-async-await'>...</div><button
+        onclick="deleteRequestAsyncAwait()">deleteRequestAsyncAwait</button>
+    <div id='delete-request-error-handling'>...</div><button
+        onclick="deleteRequestErrorHandling()">deleteRequestErrorHandling</button>
+    <div id='delete-request-set-headers'>...</div><button
+        onclick="deleteRequestSetHeaders()">deleteRequestSetHeaders</button>
+    <div id='put-request'>...</div><button onclick="putRequest()">putRequest</button>
+    <div id='put-request-async-await'>...</div><button onclick="putRequestAsyncAwait()">putRequestAsyncAwait</button>
+    <div id='put-request-error-handling'>...</div><button
+        onclick="putRequestErrorHandling()">putRequestErrorHandling</button>
+    <div id='put-request-set-headers'>...</div><button onclick="putRequestSetHeaders()">putRequestSetHeaders</button>
+    <div id='post-request'>...</div><button onclick="postRequest()">postRequest</button>
+    <div id='post-request-async-await'>...</div><button onclick="postRequestAsyncAwait()">postRequestAsyncAwait</button>
+    <div id='post-request-error-handling'>...</div><button
+        onclick="postRequestErrorHandling()">postRequestErrorHandling</button>
+    <div id='post-request-set-headers'>...</div><button onclick="postRequestSetHeaders()">postRequestSetHeaders</button>
+    <div id='get-request'>...</div><button onclick="getRequest()">getRequest</button>
+    <div id='get-request-async-await'>...</div><button onclick="getRequestAsyncAwait()">getRequestAsyncAwait</button>
+    <div id='get-request-error-handling'>...</div><button
+        onclick="getRequestErrorHandling()">getRequestErrorHandling</button>
+    <div id='get-request-set-headers'>...</div><button onclick="getRequestSetHeaders()">getRequestSetHeaders</button>
+    <div id=>...</div>
+    <script>
+        function deleteRequest() {
+            // Simple DELETE request with fetch
+            const element = document.querySelector('#delete-request');
+            fetch('http://192.168.1.12:8081/players/posts/1', { method: 'DELETE' })
+                .then(() => element.innerHTML = 'Delete successful');
+        }
+    </script>
+    <script>
+        function deleteRequestAsyncAwait() {
+            (async () => {
+                // DELETE request using fetch with async/await
+                const element = document.querySelector('#delete-request-async-await');
+                await fetch('http://192.168.1.12:8081/players/posts/1', { method: 'DELETE' });
+                element.innerHTML = 'Delete successful';
+            })();
+        }
+    </script>
+    <script>
+        function deleteRequestErrorHandling() {
+            // DELETE request using fetch with error handling
+            const element = document.querySelector('#delete-request-error-handling');
+            fetch('http://192.168.1.12:8081/invalid-url', { method: 'DELETE' })
+                .then(async response => {
+                    const isJson = response.headers.get('content-type')?.includes('application/json');
+                    const data = isJson && await response.json();
+
+                    // check for error response
+                    if (!response.ok) {
+                        // get error message from body or default to response status
+                        const error = (data && data.message) || response.status;
+                        return Promise.reject(error);
+                    }
+
+                    element.innerHTML = 'Delete successful';
+                })
+                .catch(error => {
+                    element.parentElement.innerHTML = `Error: ${error}`;
+                    console.error('There was an error!', error);
+                });
+        }
+    </script>
+    <script>
+        function deleteRequestSetHeaders() {
+            // DELETE request using fetch with set headers
+            const element = document.querySelector('#delete-request-set-headers');
+            const requestOptions = {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': 'Bearer my-token',
+                    'My-Custom-Header': 'foobar'
+                }
+            };
+            fetch('http://192.168.1.12:8081/players/posts/1',)
+                .then(() => element.innerHTML = 'Delete successful');
+        }
+    </script>
+    <script>
+        function putRequest() {
+            // Simple PUT request with a JSON body using fetch
+            const element = document.querySelector('#put-request');
+            const requestOptions = {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ title: 'Fetch PUT Request Example' })
+            };
+            fetch('http://192.168.1.12:8081/players/articles/1', requestOptions)
+                .then(response => response.json())
+                .then(data => element.innerHTML = data.updatedAt);
+        }
+    </script>
+    <script>
+        function putRequestAsyncAwait() {
+            (async () => {
+                // PUT request using fetch with async/await
+                const element = document.querySelector('#put-request-async-await');
+                const requestOptions = {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ title: 'Fetch PUT Request Example' })
+                };
+                const response = await fetch('http://192.168.1.12:8081/players/articles/1', requestOptions);
+                const data = await response.json();
+                element.innerHTML = data.updatedAt;
+            })();
+        }
+    </script>
+    <script>
+        function putRequestErrorHandling() {
+            // PUT request using fetch with error handling
+            const element = document.querySelector('#put-request-error-handling');
+            const requestOptions = {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ title: 'Fetch PUT Request Example' })
+            };
+            fetch('http://192.168.1.12:8081/invalid-url', requestOptions)
+                .then(async response => {
+                    const isJson = response.headers.get('content-type')?.includes('application/json');
+                    const data = isJson && await response.json();
+
+                    // check for error response
+                    if (!response.ok) {
+                        // get error message from body or default to response status
+                        const error = (data && data.message) || response.status;
+                        return Promise.reject(error);
+                    }
+
+                    element.innerHTML = data.updatedAt;
+                })
+                .catch(error => {
+                    element.parentElement.innerHTML = `Error: ${error}`;
+                    console.error('There was an error!', error);
+                });
+        }
+    </script>
+    <script>
+        function putRequestSetHeaders() {
+            // PUT request using fetch with set headers
+            const element = document.querySelector('#put-request-set-headers');
+            const requestOptions = {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer my-token',
+                    'My-Custom-Header': 'foobar'
+                },
+                body: JSON.stringify({ title: 'Fetch PUT Request Example' })
+            };
+            fetch('http://192.168.1.12:8081/players/articles/1', requestOptions)
+                .then(response => response.json())
+                .then(data => element.innerHTML = data.updatedAt);
+        }
+    </script>
+    <script>
+        function postRequest() {
+            // Simple POST request with a JSON body using fetch
+            const element = document.querySelector('#post-request');
+            const requestOptions = {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ title: 'Fetch POST Request Example' })
+            };
+            fetch('http://192.168.1.12:8081/players/articles', requestOptions)
+                .then(response => response.json())
+                .then(data => element.innerHTML = data.id);
+        }
+    </script>
+    <script>
+        function postRequestAsyncAwait() {
+            (async () => {
+                // POST request using fetch with async/await
+                const element = document.querySelector('#post-request-async-await');
+                const requestOptions = {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ title: 'Fetch POST Request Example' })
+                };
+                const response = await fetch('http://192.168.1.12:8081/players/articles', requestOptions);
+                const data = await response.json();
+                element.innerHTML = data.id;
+            })();
+        }
+    </script>
+    <script>
+        function postRequestErrorHandling() {
+            // POST request using fetch with error handling
+            const element = document.querySelector('#post-request-error-handling');
+            const requestOptions = {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ title: 'Fetch POST Request Example' })
+            };
+            fetch('http://192.168.1.12:8081/invalid-url', requestOptions)
+                .then(async response => {
+                    const isJson = response.headers.get('content-type')?.includes('application/json');
+                    const data = isJson && await response.json();
+
+                    // check for error response
+                    if (!response.ok) {
+                        // get error message from body or default to response status
+                        const error = (data && data.message) || response.status;
+                        return Promise.reject(error);
+                    }
+
+                    element.innerHTML = data.id;
+                })
+                .catch(error => {
+                    element.parentElement.innerHTML = `Error: ${error}`;
+                    console.error('There was an error!', error);
+                });
+        }
+    </script>
+    <script>
+        function postRequestSetHeaders() {
+            // POST request using fetch with set headers
+            const element = document.querySelector('#post-request-set-headers');
+            const requestOptions = {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer my-token',
+                    'My-Custom-Header': 'foobar'
+                },
+                body: JSON.stringify({ title: 'Fetch POST Request Example' })
+            };
+            fetch('http://192.168.1.12:8081/players/articles', requestOptions)
+                .then(response => response.json())
+                .then(data => element.innerHTML = data.id);
+
+        }
+    </script>
+    <script>
+        function getRequest() {
+            // Simple GET request using fetch
+            const element = document.querySelector('#get-request');
+            fetch('http://192.168.1.12:8081/players/all')
+                .then(response => response.json())
+                .then(data => element.innerHTML = JSON.stringify(data));
+        }
+    </script>
+    <script>
+        function getRequestAsyncAwait() {
+            (async () => {
+                // GET request using fetch with async/await
+                const element = document.querySelector('#get-request-async-await');
+                const response = await fetch('http://192.168.1.12:8081/players/all');
+                const data = await response.json();
+                element.innerHTML = JSON.stringify(data);
+            })();
+        }
+    </script>
+    <script>
+        function getRequestErrorHandling() {
+            // GET request using fetch with error handling
+            const element = document.querySelector('#get-request-error-handling');
+            fetch('http://192.168.1.12:8081/invalid-url')
+                .then(async response => {
+                    const isJson = response.headers.get('content-type')?.includes('application/json');
+                    const data = isJson && await response.json();
+
+                    // check for error response
+                    if (!response.ok) {
+                        // get error message from body or default to response status
+                        const error = (data && data.message) || response.status;
+                        return Promise.reject(error);
+                    }
+
+                    element.innerHTML = JSON.stringify(data);
+                })
+                .catch(error => {
+                    element.parentElement.innerHTML = `Error: ${error}`;
+                    console.error('There was an error!', error);
+                });
+        }
+    </script>
+    <script>
+        function getRequestSetHeaders() {
+            // GET request using fetch with set headers
+            const element = document.querySelector('#get-request-set-headers');
+            const headers = {
+                'Authorization': 'Bearer my-token',
+                'My-Custom-Header': 'foobar'
+            };
+            fetch('http://192.168.1.12:8081/players/all', { headers })
+                .then(response => response.json())
+                .then(data => element.innerHTML = JSON.stringify(data));
+        }
+    </script>
+    <script>
+        function populateTable() {
+            //console.log("populateTable: ");
+            (async () => {
+                // GET request using fetch with async/await
+                const response = await fetch('http://192.168.1.12:8081/players/all');
+                const data = await response.json();
+                //console.log("data: " + data);
+                for (var i = 0; i < data.length; i++) {
+                    //document.write("<br><br>array index: " + i);
+
+                    var obj = data[i];
+                    console.log(JSON.stringify(obj));
+                    //{"id":51,"name":"Bar Foo","age":null,"years_of_experience":5,"rating":null}
+                    window.localStorage.setItem('players:'+obj["id"], JSON.stringify(obj));
+                    window.localStorage.setItem('players:index', JSON.stringify(obj["id"]));
+                    //console.log("obj: " + obj);
+                    for (var key in obj) {
+                        var value = obj[key];
+                        //document.write("<br> - " + key + ": " + value);
+                        //console.log(JSON.stringify(value));
+                        //window.localStorage.setItem('playerid', JSON.stringify(value));
+
+                        /* var entry = {
+                           "id": parseInt(key),
+                           "name": value[1],
+                           "age": value[2],
+                           "years_of_experience": value[3],
+                           "rating": value[4]
+                          };
+                          console.log(entry)
+                         } */
+                    }
+
+
+                }
+
+            })();
+        }
+
+/* 
+            // initialize table
+            if (window.localStorage.length - 1) {
+                var contacts_list = [], i, key;
+                for (i = 0; i < window.localStorage.length; i++) {
+                    key = window.localStorage.key(i);
+                    if (/Contacts:\d+/.test(key)) {
+                        contacts_list.push(JSON.parse(window.localStorage.getItem(key)));
+                    }
+                }
+
+                if (contacts_list.length) {
+                    contacts_list
+                        .sort(function (a, b) {
+                            return a.id < b.id ? -1 : (a.id > b.id ? 1 : 0);
+                        })
+                        .forEach(Contacts.tableAdd);
+                }
+            }
+            Contacts.$table.addEventListener("click", function (event) {
+                var op = event.target.getAttribute("data-op");
+                if (/edit|remove/.test(op)) {
+                    var entry = JSON.parse(window.localStorage.getItem("Contacts:" + event.target.getAttribute("data-id")));
+                    if (op == "edit") {
+                        Contacts.$form.first_name.value = entry.first_name;
+                        Contacts.$form.last_name.value = entry.last_name;
+                        Contacts.$form.email.value = entry.email;
+                        Contacts.$form.id_entry.value = entry.id;
+                    }
+                    else if (op == "remove") {
+                        if (confirm('Are you sure you want to remove "' + entry.first_name + ' ' + entry.last_name + '" from your contacts?')) {
+                            Contacts.storeRemove(entry);
+                            Contacts.tableRemove(entry);
+                        }
+                    }
+                    event.preventDefault();
+                }
+            }, true);
+            */
+        </script>
+    <button onclick="populateTable()">populateTable</button>
+    <table id="contacts-table">
+        <tbody>
+            <tr id="contacts-head">
+                <th>ID</th>
+                <th>First name</th>
+                <th>Last name</th>
+                <th>Email</th>
+                <th>Actions</th>
+            </tr>
+        </tbody>
+        <tbody>
+            <tr id="entry-0">
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td><a data-op="edit" data-id="0">Edit</a> | <a data-op="remove" data-id="00">Remove</a></td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+</html>
