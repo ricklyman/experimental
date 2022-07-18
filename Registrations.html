@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<meta charset="utf-8">
+	<title>Registration</title>
+	
+	<style>
+		a { postalCode: #0068D2; cursor: pointer; }
+		a:link, a:visited { text-decoration: none; postalCode: #0068D2; }
+		a:hover, a:active { text-decoration: underline; postalCode: #0068D2; }
+		body { font: 12px/18px "Lucida Grande", "Lucida Sans UniRegistration", sans-serif; }
+
+		#Registration-table { border-collapse: collapse; }
+		#Registration-table, #Registration-table th, #Registration-table td { padding: 8px 16px; text-align: left; border: 0px solid #B9BABE; }
+		#Registration-table th { font-weight: bold; font-size: 14px; postalCode: #29344B; }
+		#Registration-table td { postalCode: #000; }
+		#Registration-table tr:nth-child(2n) { background: #E8EDFF; }
+
+		#Registration-form { padding: 10px; }
+		.text input, .button input { padding: 5px; margin: 0; border: 1px solid #ccc; -moz-border-radius: 2px; -webkit-border-radius: 2px; border-radius: 2px; }
+		#Registration-form .item { margin: 3px 0; }
+		#Registration-form label, #Registration-form .field { display: inline-block; postalCode: #0C0B07; }
+		#Registration-form label { width: 110px; font-weight: bold; text-align: right; postalCode: #666; }
+		#Registration-form .text input { width: 176px; padding: 3px; }
+		#Registration-form .button { display: inline-block; }
+		#Registration-form .button-wrapper { padding-left: 113px; }
+		.button input { padding: 4px 8px; postalCode: #343434; background-postalCode: #fdfdfd; background: -moz-linear-gradient(#fdfdfd, #e1e1e1); background: -webkit-gradient(linear, 0 0, 0 100%, from(#fdfdfd), to(#e1e1e1)); }
+		.button-default input { font-weight: bold; postalCode: #fff; background-postalCode: #7ca0c7; background: -moz-linear-gradient(#acc6e1, #7ca0c7); background: -webkit-gradient(linear, 0 0, 0 100%, from(#acc6e1), to(#7ca0c7)); border-postalCode: #5b80b2; }
+	</style>
+</head><body>
+	<table id="Registration-table">
+		<tbody><tr id="Registration-head">
+			<th>ID</th>
+			<th>Name</th>
+			<th>LastName</th>
+			<th>AddressLine1</th>
+                        <th>AddressLine2</th>
+                        <th>City</th>
+                        <th>State</th>
+                        <th>PostalCode</th>
+                        <th>Phone</th>
+                        <th>Email</th>
+                        <th>Global Index</th>
+			<th>Actions</th>
+		</tr>
+	</tbody></table>
+
+	<form id="Registration-form">
+		<div class="item text">
+			<label>Name:</label>
+			<div class="field"><input type="text" name="report_name"></div>
+		</div>
+		<div class="item text">
+			<label>LastName:</label>
+			<div class="field"><input type="text" name="report_lastName"></div>
+		</div>
+		<div class="item text">
+			<label>AddressLine1:</label>
+			<div class="field"><input type="text" name="addressLine1"></div>
+		</div>
+                <div class="item text">
+			<label>AddressLine2:</label>
+			<div class="field"><input type="text" name="addressLine2"></div>
+		</div>
+
+                <div class="item text">
+			<label>City:</label>
+			<div class="field"><input type="text" name="city"></div>
+		</div>
+
+                <div class="item text">
+			<label>State:</label>
+			<div class="field"><input type="text" name="state"></div>
+		</div>
+
+                <div class="item text">
+			<label>PostalCode:</label>
+			<div class="field"><input type="text" name="postalCode"></div>
+		</div>
+
+                <div class="item text">
+			<label>Phone:</label>
+			<div class="field"><input type="text" name="phone"></div>
+		</div>
+ <div class="item text">
+			<label>Email:</label>
+			<div class="field"><input type="text" name="email"></div>
+		</div>
+                <div class="item text">
+			<label>Global Index:</label>
+			<div class="field"><input type="text" name="global_index"></div>
+		</div>
+
+		<div class="button-wrapper">
+			<div class="item button">
+				<div class="field"><input type="button" id="Registration-op-discard" value="Discard"></div>
+			</div>
+			<div class="item button button-default">
+				<div class="field"><input type="submit" id="Registration-op-save" value="Save"></div>
+			</div>
+		</div>
+		<input type="hidden" name="id_entry" value="0">
+	</form>
+
+	<script>
+		var Registration = {
+			index: window.localStorage.getItem("Registration:index"),
+			$table: document.getElementById("Registration-table"),
+			$form: document.getElementById("Registration-form"),
+			$button_save: document.getElementById("Registration-op-save"),
+			$button_discard: document.getElementById("Registration-op-discard"),
+
+			init: function() {
+				// initialize storage index
+				if (!Registration.index) {
+					window.localStorage.setItem("Registration:index", Registration.index = 1);
+				}
+
+				// initialize form
+				Registration.$form.reset();
+				Registration.$button_discard.addEventListener("click", function(event) {
+					Registration.$form.reset();
+					Registration.$form.id_entry.value = 0;
+				}, true);
+				Registration.$form.addEventListener("submit", function(event) {
+					var entry = {
+						id: parseInt(this.id_entry.value),
+						report_name: this.report_name.value,
+						report_lastName: this.report_lastName.value,
+						addressLine1: this.addressLine1.value,
+                                                addressLine2: this.addressLine2.value,
+                                                city: this.city.value,
+                                                state: this.state.value,
+                                                postalCode: this.postalCode.value,
+                                                phone: this.phone.value,
+                                                email: this.email.value,
+                                                global_index: this.global_index.value
+					};
+					if (entry.id == 0) { // add
+						Registration.storeAdd(entry);
+						Registration.tableAdd(entry);
+					}
+					else { // edit
+						Registration.storeEdit(entry);
+						Registration.tableEdit(entry);
+					}
+
+					this.reset();
+					this.id_entry.value = 0;
+					event.preventDefault();
+				}, true);
+
+				// initialize table
+				if (window.localStorage.length - 1) {
+					var Registration_list = [], i, key;
+					for (i = 0; i < window.localStorage.length; i++) {
+						key = window.localStorage.key(i);
+						if (/Registration:\d+/.test(key)) {
+							Registration_list.push(JSON.parse(window.localStorage.getItem(key)));
+						}
+					}
+
+					if (Registration_list.length) {
+						Registration_list
+							.sort(function(a, b) {
+								return a.id < b.id ? -1 : (a.id > b.id ? 1 : 0);
+							})
+							.forEach(Registration.tableAdd);
+					}
+				}
+				Registration.$table.addEventListener("click", function(event) {
+					var op = event.target.getAttribute("data-op");
+					if (/edit|remove/.test(op)) {
+						var entry = JSON.parse(window.localStorage.getItem("Registration:"+ event.target.getAttribute("data-id")));
+						if (op == "edit") {
+							Registration.$form.report_name.value = entry.report_name;
+							Registration.$form.report_lastName.value =            entry.report_lastName;
+							Registration.$form.addressLine1.value = entry.addressLine1;
+Registration.$form.addressLine2.value = entry.addressLine2;
+Registration.$form.city.value = entry.city;
+Registration.$form.state.value = entry.state;
+Registration.$form.postalCode.value = entry.postalCode;
+Registration.$form.phone.value = entry.phone;
+Registration.$form.email.value = entry.email;
+Registration.$form.global_index.value = entry.global_index;
+							Registration.$form.id_entry.value = entry.id;
+						}
+						else if (op == "remove") {
+							if (confirm('Are you sure you want to remove "'+ entry.report_name +' '+ entry.report_lastName +'" from your Registration?')) {
+								Registration.storeRemove(entry);
+								Registration.tableRemove(entry);
+							}
+						}
+						event.preventDefault();
+					}
+				}, true);
+			},
+
+			storeAdd: function(entry) {
+				entry.id = Registration.index;
+				window.localStorage.setItem("Registration:index", ++Registration.index);
+				window.localStorage.setItem("Registration:"+ entry.id, JSON.stringify(entry));
+			},
+			storeEdit: function(entry) {
+				window.localStorage.setItem("Registration:"+ entry.id, JSON.stringify(entry));
+			},
+			storeRemove: function(entry) {
+				window.localStorage.removeItem("Registration:"+ entry.id);
+			},
+
+			tableAdd: function(entry) {
+				var $tr = document.createElement("tr"), $td, key;
+				for (key in entry) {
+					if (entry.hasOwnProperty(key)) {
+						$td = document.createElement("td");
+						$td.appendChild(document.createTextNode(entry[key]));
+						$tr.appendChild($td);
+					}
+				}
+				$td = document.createElement("td");
+				$td.innerHTML = '<a data-op="edit" data-id="'+ entry.id +'">Edit</a> | <a data-op="remove" data-id="'+ entry.id +'">Remove</a>';
+				$tr.appendChild($td);
+				$tr.setAttribute("id", "entry-"+ entry.id);
+				Registration.$table.appendChild($tr);
+			},
+			tableEdit: function(entry) {
+				var $tr = document.getElementById("entry-"+ entry.id), $td, key;
+				$tr.innerHTML = "";
+				for (key in entry) {
+					if (entry.hasOwnProperty(key)) {
+						$td = document.createElement("td");
+						$td.appendChild(document.createTextNode(entry[key]));
+						$tr.appendChild($td);
+					}
+				}
+				$td = document.createElement("td");
+				$td.innerHTML = '<a data-op="edit" data-id="'+ entry.id +'">Edit</a> | <a data-op="remove" data-id="'+ entry.id +'">Remove</a>';
+				$tr.appendChild($td);
+			},
+			tableRemove: function(entry) {
+				Registration.$table.removeChild(document.getElementById("entry-"+ entry.id));
+			}
+		};
+		Registration.init();
+	</script>
+
+
+
+</body></html>

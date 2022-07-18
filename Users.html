@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<meta charset="utf-8">
+	<title>User</title>
+	
+	<style>
+		a { color: #0068D2; cursor: pointer; }
+		a:link, a:visited { text-decoration: none; color: #0068D2; }
+		a:hover, a:active { text-decoration: underline; color: #0068D2; }
+		body { font: 12px/18px "Lucida Grande", "Lucida Sans UniUser", sans-serif; }
+
+		#User-table { border-collapse: collapse; }
+		#User-table, #User-table th, #User-table td { padding: 8px 16px; text-align: left; border: 0px solid #B9BABE; }
+		#User-table th { font-weight: bold; font-size: 14px; color: #29344B; }
+		#User-table td { color: #000; }
+		#User-table tr:nth-child(2n) { background: #E8EDFF; }
+
+		#User-form { padding: 10px; }
+		.text input, .button input { padding: 5px; margin: 0; border: 1px solid #ccc; -moz-border-radius: 2px; -webkit-border-radius: 2px; border-radius: 2px; }
+		#User-form .item { margin: 3px 0; }
+		#User-form label, #User-form .field { display: inline-block; color: #0C0B07; }
+		#User-form label { width: 110px; font-weight: bold; text-align: right; color: #666; }
+		#User-form .text input { width: 176px; padding: 3px; }
+		#User-form .button { display: inline-block; }
+		#User-form .button-wrapper { padding-left: 113px; }
+		.button input { padding: 4px 8px; color: #343434; background-color: #fdfdfd; background: -moz-linear-gradient(#fdfdfd, #e1e1e1); background: -webkit-gradient(linear, 0 0, 0 100%, from(#fdfdfd), to(#e1e1e1)); }
+		.button-default input { font-weight: bold; color: #fff; background-color: #7ca0c7; background: -moz-linear-gradient(#acc6e1, #7ca0c7); background: -webkit-gradient(linear, 0 0, 0 100%, from(#acc6e1), to(#7ca0c7)); border-color: #5b80b2; }
+	</style>
+</head><body>
+	<table id="User-table">
+		<tbody><tr id="User-head">
+			<th>ID</th>
+			<th>Name</th>
+			<th>Role</th>
+			<th>Description</th>
+                        <th>Available</th>
+                        <th>Type</th>
+                        <th>Price</th>
+                        <th>Color</th>
+                        <th>Material</th>
+                        <th>Image</th>
+                        <th>Global Index</th>
+			<th>Actions</th>
+		</tr>
+	</tbody></table>
+
+	<form id="User-form">
+		<div class="item text">
+			<label>Name:</label>
+			<div class="field"><input type="text" name="report_name"></div>
+		</div>
+		<div class="item text">
+			<label>Role:</label>
+			<div class="field"><input type="text" name="report_role"></div>
+		</div>
+		<div class="item text">
+			<label>Description:</label>
+			<div class="field"><input type="text" name="description"></div>
+		</div>
+                <div class="item text">
+			<label>Available:</label>
+			<div class="field"><input type="text" name="available"></div>
+		</div>
+
+                <div class="item text">
+			<label>Type:</label>
+			<div class="field"><input type="text" name="type"></div>
+		</div>
+
+                <div class="item text">
+			<label>Price:</label>
+			<div class="field"><input type="text" name="price"></div>
+		</div>
+
+                <div class="item text">
+			<label>Color:</label>
+			<div class="field"><input type="text" name="color"></div>
+		</div>
+
+                <div class="item text">
+			<label>Material:</label>
+			<div class="field"><input type="text" name="material"></div>
+		</div>
+ <div class="item text">
+			<label>Image:</label>
+			<div class="field"><input type="text" name="image"></div>
+		</div>
+                <div class="item text">
+			<label>Global Index:</label>
+			<div class="field"><input type="text" name="global_index"></div>
+		</div>
+
+		<div class="button-wrapper">
+			<div class="item button">
+				<div class="field"><input type="button" id="User-op-discard" value="Discard"></div>
+			</div>
+			<div class="item button button-default">
+				<div class="field"><input type="submit" id="User-op-save" value="Save"></div>
+			</div>
+		</div>
+		<input type="hidden" name="id_entry" value="0">
+	</form>
+
+	<script>
+		var User = {
+			index: window.localStorage.getItem("User:index"),
+			$table: document.getElementById("User-table"),
+			$form: document.getElementById("User-form"),
+			$button_save: document.getElementById("User-op-save"),
+			$button_discard: document.getElementById("User-op-discard"),
+
+			init: function() {
+				// initialize storage index
+				if (!User.index) {
+					window.localStorage.setItem("User:index", User.index = 1);
+				}
+
+				// initialize form
+				User.$form.reset();
+				User.$button_discard.addEventListener("click", function(event) {
+					User.$form.reset();
+					User.$form.id_entry.value = 0;
+				}, true);
+				User.$form.addEventListener("submit", function(event) {
+					var entry = {
+						id: parseInt(this.id_entry.value),
+						report_name: this.report_name.value,
+						report_role: this.report_role.value,
+						description: this.description.value,
+                                                available: this.available.value,
+                                                type: this.type.value,
+                                                price: this.price.value,
+                                                color: this.color.value,
+                                                material: this.material.value,
+                                                image: this.image.value,
+                                                global_index: this.global_index.value
+					};
+					if (entry.id == 0) { // add
+						User.storeAdd(entry);
+						User.tableAdd(entry);
+					}
+					else { // edit
+						User.storeEdit(entry);
+						User.tableEdit(entry);
+					}
+
+					this.reset();
+					this.id_entry.value = 0;
+					event.preventDefault();
+				}, true);
+
+				// initialize table
+				if (window.localStorage.length - 1) {
+					var User_list = [], i, key;
+					for (i = 0; i < window.localStorage.length; i++) {
+						key = window.localStorage.key(i);
+						if (/User:\d+/.test(key)) {
+							User_list.push(JSON.parse(window.localStorage.getItem(key)));
+						}
+					}
+
+					if (User_list.length) {
+						User_list
+							.sort(function(a, b) {
+								return a.id < b.id ? -1 : (a.id > b.id ? 1 : 0);
+							})
+							.forEach(User.tableAdd);
+					}
+				}
+				User.$table.addEventListener("click", function(event) {
+					var op = event.target.getAttribute("data-op");
+					if (/edit|remove/.test(op)) {
+						var entry = JSON.parse(window.localStorage.getItem("User:"+ event.target.getAttribute("data-id")));
+						if (op == "edit") {
+							User.$form.report_name.value = entry.report_name;
+							User.$form.report_role.value =            entry.report_role;
+							User.$form.description.value = entry.description;
+User.$form.available.value = entry.available;
+User.$form.type.value = entry.type;
+User.$form.price.value = entry.price;
+User.$form.color.value = entry.color;
+User.$form.material.value = entry.material;
+User.$form.image.value = entry.image;
+User.$form.global_index.value = entry.global_index;
+							User.$form.id_entry.value = entry.id;
+						}
+						else if (op == "remove") {
+							if (confirm('Are you sure you want to remove "'+ entry.report_name +' '+ entry.report_role +'" from your User?')) {
+								User.storeRemove(entry);
+								User.tableRemove(entry);
+							}
+						}
+						event.preventDefault();
+					}
+				}, true);
+			},
+
+			storeAdd: function(entry) {
+				entry.id = User.index;
+				window.localStorage.setItem("User:index", ++User.index);
+				window.localStorage.setItem("User:"+ entry.id, JSON.stringify(entry));
+			},
+			storeEdit: function(entry) {
+				window.localStorage.setItem("User:"+ entry.id, JSON.stringify(entry));
+			},
+			storeRemove: function(entry) {
+				window.localStorage.removeItem("User:"+ entry.id);
+			},
+
+			tableAdd: function(entry) {
+				var $tr = document.createElement("tr"), $td, key;
+				for (key in entry) {
+					if (entry.hasOwnProperty(key)) {
+						$td = document.createElement("td");
+						$td.appendChild(document.createTextNode(entry[key]));
+						$tr.appendChild($td);
+					}
+				}
+				$td = document.createElement("td");
+				$td.innerHTML = '<a data-op="edit" data-id="'+ entry.id +'">Edit</a> | <a data-op="remove" data-id="'+ entry.id +'">Remove</a>';
+				$tr.appendChild($td);
+				$tr.setAttribute("id", "entry-"+ entry.id);
+				User.$table.appendChild($tr);
+			},
+			tableEdit: function(entry) {
+				var $tr = document.getElementById("entry-"+ entry.id), $td, key;
+				$tr.innerHTML = "";
+				for (key in entry) {
+					if (entry.hasOwnProperty(key)) {
+						$td = document.createElement("td");
+						$td.appendChild(document.createTextNode(entry[key]));
+						$tr.appendChild($td);
+					}
+				}
+				$td = document.createElement("td");
+				$td.innerHTML = '<a data-op="edit" data-id="'+ entry.id +'">Edit</a> | <a data-op="remove" data-id="'+ entry.id +'">Remove</a>';
+				$tr.appendChild($td);
+			},
+			tableRemove: function(entry) {
+				User.$table.removeChild(document.getElementById("entry-"+ entry.id));
+			}
+		};
+		User.init();
+	</script>
+
+
+
+</body></html>

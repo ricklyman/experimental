@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<meta charset="utf-8">
+	<title>Order</title>
+	
+	<style>
+		a { quantity: #0068D2; cursor: pointer; }
+		a:link, a:visited { text-decoration: none; quantity: #0068D2; }
+		a:hover, a:active { text-decoration: underline; quantity: #0068D2; }
+		body { font: 12px/18px "Lucida Grande", "Lucida Sans UniOrder", sans-serif; }
+
+		#Order-table { border-collapse: collapse; }
+		#Order-table, #Order-table th, #Order-table td { padding: 8px 16px; text-align: left; border: 0px solid #B9BABE; }
+		#Order-table th { font-weight: bold; font-size: 14px; quantity: #29344B; }
+		#Order-table td { quantity: #000; }
+		#Order-table tr:nth-child(2n) { background: #E8EDFF; }
+
+		#Order-form { padding: 10px; }
+		.text input, .button input { padding: 5px; margin: 0; border: 1px solid #ccc; -moz-border-radius: 2px; -webkit-border-radius: 2px; border-radius: 2px; }
+		#Order-form .item { margin: 3px 0; }
+		#Order-form label, #Order-form .field { display: inline-block; quantity: #0C0B07; }
+		#Order-form label { width: 110px; font-weight: bold; text-align: right; quantity: #666; }
+		#Order-form .text input { width: 176px; padding: 3px; }
+		#Order-form .button { display: inline-block; }
+		#Order-form .button-wrapper { padding-left: 113px; }
+		.button input { padding: 4px 8px; quantity: #343434; background-quantity: #fdfdfd; background: -moz-linear-gradient(#fdfdfd, #e1e1e1); background: -webkit-gradient(linear, 0 0, 0 100%, from(#fdfdfd), to(#e1e1e1)); }
+		.button-default input { font-weight: bold; quantity: #fff; background-quantity: #7ca0c7; background: -moz-linear-gradient(#acc6e1, #7ca0c7); background: -webkit-gradient(linear, 0 0, 0 100%, from(#acc6e1), to(#7ca0c7)); border-quantity: #5b80b2; }
+	</style>
+</head><body>
+	<table id="Order-table">
+		<tbody><tr id="Order-head">
+			<th>ID</th>
+			<th>Name</th>
+			<th>Session</th>
+			<th>OrderNbr</th>
+                        <th>Status</th>
+                        <th>LineNbr</th>
+                        <th>ProductID</th>
+                        <th>Quantity</th>
+                        <th>Price</th>
+                        <th>TrackingNbr</th>
+                        <th>Global Index</th>
+			<th>Actions</th>
+		</tr>
+	</tbody></table>
+
+	<form id="Order-form">
+		<div class="item text">
+			<label>Name:</label>
+			<div class="field"><input type="text" name="report_name"></div>
+		</div>
+		<div class="item text">
+			<label>Session:</label>
+			<div class="field"><input type="text" name="report_session"></div>
+		</div>
+		<div class="item text">
+			<label>OrderNbr:</label>
+			<div class="field"><input type="text" name="orderNbr"></div>
+		</div>
+                <div class="item text">
+			<label>Status:</label>
+			<div class="field"><input type="text" name="status"></div>
+		</div>
+
+                <div class="item text">
+			<label>LineNbr:</label>
+			<div class="field"><input type="text" name="lineNbr"></div>
+		</div>
+
+                <div class="item text">
+			<label>ProductID:</label>
+			<div class="field"><input type="text" name="productID"></div>
+		</div>
+
+                <div class="item text">
+			<label>Quantity:</label>
+			<div class="field"><input type="text" name="quantity"></div>
+		</div>
+
+                <div class="item text">
+			<label>Price:</label>
+			<div class="field"><input type="text" name="price"></div>
+		</div>
+ <div class="item text">
+			<label>TrackingNbr:</label>
+			<div class="field"><input type="text" name="trackingNbr"></div>
+		</div>
+                <div class="item text">
+			<label>Global Index:</label>
+			<div class="field"><input type="text" name="global_index"></div>
+		</div>
+
+		<div class="button-wrapper">
+			<div class="item button">
+				<div class="field"><input type="button" id="Order-op-discard" value="Discard"></div>
+			</div>
+			<div class="item button button-default">
+				<div class="field"><input type="submit" id="Order-op-save" value="Save"></div>
+			</div>
+		</div>
+		<input type="hidden" name="id_entry" value="0">
+	</form>
+
+	<script>
+		var Order = {
+			index: window.localStorage.getItem("Order:index"),
+			$table: document.getElementById("Order-table"),
+			$form: document.getElementById("Order-form"),
+			$button_save: document.getElementById("Order-op-save"),
+			$button_discard: document.getElementById("Order-op-discard"),
+
+			init: function() {
+				// initialize storage index
+				if (!Order.index) {
+					window.localStorage.setItem("Order:index", Order.index = 1);
+				}
+
+				// initialize form
+				Order.$form.reset();
+				Order.$button_discard.addEventListener("click", function(event) {
+					Order.$form.reset();
+					Order.$form.id_entry.value = 0;
+				}, true);
+				Order.$form.addEventListener("submit", function(event) {
+					var entry = {
+						id: parseInt(this.id_entry.value),
+						report_name: this.report_name.value,
+						report_session: this.report_session.value,
+						orderNbr: this.orderNbr.value,
+                                                status: this.status.value,
+                                                lineNbr: this.lineNbr.value,
+                                                productID: this.productID.value,
+                                                quantity: this.quantity.value,
+                                                price: this.price.value,
+                                                trackingNbr: this.trackingNbr.value,
+                                                global_index: this.global_index.value
+					};
+					if (entry.id == 0) { // add
+						Order.storeAdd(entry);
+						Order.tableAdd(entry);
+					}
+					else { // edit
+						Order.storeEdit(entry);
+						Order.tableEdit(entry);
+					}
+
+					this.reset();
+					this.id_entry.value = 0;
+					event.preventDefault();
+				}, true);
+
+				// initialize table
+				if (window.localStorage.length - 1) {
+					var Order_list = [], i, key;
+					for (i = 0; i < window.localStorage.length; i++) {
+						key = window.localStorage.key(i);
+						if (/Order:\d+/.test(key)) {
+							Order_list.push(JSON.parse(window.localStorage.getItem(key)));
+						}
+					}
+
+					if (Order_list.length) {
+						Order_list
+							.sort(function(a, b) {
+								return a.id < b.id ? -1 : (a.id > b.id ? 1 : 0);
+							})
+							.forEach(Order.tableAdd);
+					}
+				}
+				Order.$table.addEventListener("click", function(event) {
+					var op = event.target.getAttribute("data-op");
+					if (/edit|remove/.test(op)) {
+						var entry = JSON.parse(window.localStorage.getItem("Order:"+ event.target.getAttribute("data-id")));
+						if (op == "edit") {
+							Order.$form.report_name.value = entry.report_name;
+							Order.$form.report_session.value =            entry.report_session;
+							Order.$form.orderNbr.value = entry.orderNbr;
+Order.$form.status.value = entry.status;
+Order.$form.lineNbr.value = entry.lineNbr;
+Order.$form.productID.value = entry.productID;
+Order.$form.quantity.value = entry.quantity;
+Order.$form.price.value = entry.price;
+Order.$form.trackingNbr.value = entry.trackingNbr;
+Order.$form.global_index.value = entry.global_index;
+							Order.$form.id_entry.value = entry.id;
+						}
+						else if (op == "remove") {
+							if (confirm('Are you sure you want to remove "'+ entry.report_name +' '+ entry.report_session +'" from your Order?')) {
+								Order.storeRemove(entry);
+								Order.tableRemove(entry);
+							}
+						}
+						event.preventDefault();
+					}
+				}, true);
+			},
+
+			storeAdd: function(entry) {
+				entry.id = Order.index;
+				window.localStorage.setItem("Order:index", ++Order.index);
+				window.localStorage.setItem("Order:"+ entry.id, JSON.stringify(entry));
+			},
+			storeEdit: function(entry) {
+				window.localStorage.setItem("Order:"+ entry.id, JSON.stringify(entry));
+			},
+			storeRemove: function(entry) {
+				window.localStorage.removeItem("Order:"+ entry.id);
+			},
+
+			tableAdd: function(entry) {
+				var $tr = document.createElement("tr"), $td, key;
+				for (key in entry) {
+					if (entry.hasOwnProperty(key)) {
+						$td = document.createElement("td");
+						$td.appendChild(document.createTextNode(entry[key]));
+						$tr.appendChild($td);
+					}
+				}
+				$td = document.createElement("td");
+				$td.innerHTML = '<a data-op="edit" data-id="'+ entry.id +'">Edit</a> | <a data-op="remove" data-id="'+ entry.id +'">Remove</a>';
+				$tr.appendChild($td);
+				$tr.setAttribute("id", "entry-"+ entry.id);
+				Order.$table.appendChild($tr);
+			},
+			tableEdit: function(entry) {
+				var $tr = document.getElementById("entry-"+ entry.id), $td, key;
+				$tr.innerHTML = "";
+				for (key in entry) {
+					if (entry.hasOwnProperty(key)) {
+						$td = document.createElement("td");
+						$td.appendChild(document.createTextNode(entry[key]));
+						$tr.appendChild($td);
+					}
+				}
+				$td = document.createElement("td");
+				$td.innerHTML = '<a data-op="edit" data-id="'+ entry.id +'">Edit</a> | <a data-op="remove" data-id="'+ entry.id +'">Remove</a>';
+				$tr.appendChild($td);
+			},
+			tableRemove: function(entry) {
+				Order.$table.removeChild(document.getElementById("entry-"+ entry.id));
+			}
+		};
+		Order.init();
+	</script>
+
+
+
+</body></html>

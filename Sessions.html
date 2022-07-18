@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<meta charset="utf-8">
+	<title>Session</title>
+	
+	<style>
+		a { cookies: #0068D2; cursor: pointer; }
+		a:link, a:visited { text-decoration: none; cookies: #0068D2; }
+		a:hover, a:active { text-decoration: underline; cookies: #0068D2; }
+		body { font: 12px/18px "Lucida Grande", "Lucida Sans UniSession", sans-serif; }
+
+		#Session-table { border-collapse: collapse; }
+		#Session-table, #Session-table th, #Session-table td { padding: 8px 16px; text-align: left; border: 0px solid #B9BABE; }
+		#Session-table th { font-weight: bold; font-size: 14px; cookies: #29344B; }
+		#Session-table td { cookies: #000; }
+		#Session-table tr:nth-child(2n) { background: #E8EDFF; }
+
+		#Session-form { padding: 10px; }
+		.text input, .button input { padding: 5px; margin: 0; border: 1px solid #ccc; -moz-border-radius: 2px; -webkit-border-radius: 2px; border-radius: 2px; }
+		#Session-form .item { margin: 3px 0; }
+		#Session-form label, #Session-form .field { display: inline-block; cookies: #0C0B07; }
+		#Session-form label { width: 110px; font-weight: bold; text-align: right; cookies: #666; }
+		#Session-form .text input { width: 176px; padding: 3px; }
+		#Session-form .button { display: inline-block; }
+		#Session-form .button-wrapper { padding-left: 113px; }
+		.button input { padding: 4px 8px; cookies: #343434; background-cookies: #fdfdfd; background: -moz-linear-gradient(#fdfdfd, #e1e1e1); background: -webkit-gradient(linear, 0 0, 0 100%, from(#fdfdfd), to(#e1e1e1)); }
+		.button-default input { font-weight: bold; cookies: #fff; background-cookies: #7ca0c7; background: -moz-linear-gradient(#acc6e1, #7ca0c7); background: -webkit-gradient(linear, 0 0, 0 100%, from(#acc6e1), to(#7ca0c7)); border-cookies: #5b80b2; }
+	</style>
+</head><body>
+	<table id="Session-table">
+		<tbody><tr id="Session-head">
+			<th>ID</th>
+			<th>Name</th>
+			<th>Role</th>
+			<th>Description</th>
+                        <th>User</th>
+                        <th>Type</th>
+                        <th>ClientIP</th>
+                        <th>Cookies</th>
+                        <th>LocalStorage</th>
+                        <th>Token</th>
+                        <th>Global Index</th>
+			<th>Actions</th>
+		</tr>
+	</tbody></table>
+
+	<form id="Session-form">
+		<div class="item text">
+			<label>Name:</label>
+			<div class="field"><input type="text" name="report_name"></div>
+		</div>
+		<div class="item text">
+			<label>Role:</label>
+			<div class="field"><input type="text" name="report_role"></div>
+		</div>
+		<div class="item text">
+			<label>Description:</label>
+			<div class="field"><input type="text" name="description"></div>
+		</div>
+                <div class="item text">
+			<label>User:</label>
+			<div class="field"><input type="text" name="user"></div>
+		</div>
+
+                <div class="item text">
+			<label>Type:</label>
+			<div class="field"><input type="text" name="type"></div>
+		</div>
+
+                <div class="item text">
+			<label>ClientIP:</label>
+			<div class="field"><input type="text" name="clientIP"></div>
+		</div>
+
+                <div class="item text">
+			<label>Cookies:</label>
+			<div class="field"><input type="text" name="cookies"></div>
+		</div>
+
+                <div class="item text">
+			<label>LocalStorage:</label>
+			<div class="field"><input type="text" name="material"></div>
+		</div>
+ <div class="item text">
+			<label>Token:</label>
+			<div class="field"><input type="text" name="token"></div>
+		</div>
+                <div class="item text">
+			<label>Global Index:</label>
+			<div class="field"><input type="text" name="global_index"></div>
+		</div>
+
+		<div class="button-wrapper">
+			<div class="item button">
+				<div class="field"><input type="button" id="Session-op-discard" value="Discard"></div>
+			</div>
+			<div class="item button button-default">
+				<div class="field"><input type="submit" id="Session-op-save" value="Save"></div>
+			</div>
+		</div>
+		<input type="hidden" name="id_entry" value="0">
+	</form>
+
+	<script>
+		var Session = {
+			index: window.localStorage.getItem("Session:index"),
+			$table: document.getElementById("Session-table"),
+			$form: document.getElementById("Session-form"),
+			$button_save: document.getElementById("Session-op-save"),
+			$button_discard: document.getElementById("Session-op-discard"),
+
+			init: function() {
+				// initialize storage index
+				if (!Session.index) {
+					window.localStorage.setItem("Session:index", Session.index = 1);
+				}
+
+				// initialize form
+				Session.$form.reset();
+				Session.$button_discard.addEventListener("click", function(event) {
+					Session.$form.reset();
+					Session.$form.id_entry.value = 0;
+				}, true);
+				Session.$form.addEventListener("submit", function(event) {
+					var entry = {
+						id: parseInt(this.id_entry.value),
+						report_name: this.report_name.value,
+						report_role: this.report_role.value,
+						description: this.description.value,
+                                                user: this.user.value,
+                                                type: this.type.value,
+                                                clientIP: this.clientIP.value,
+                                                cookies: this.cookies.value,
+                                                material: this.material.value,
+                                                token: this.token.value,
+                                                global_index: this.global_index.value
+					};
+					if (entry.id == 0) { // add
+						Session.storeAdd(entry);
+						Session.tableAdd(entry);
+					}
+					else { // edit
+						Session.storeEdit(entry);
+						Session.tableEdit(entry);
+					}
+
+					this.reset();
+					this.id_entry.value = 0;
+					event.preventDefault();
+				}, true);
+
+				// initialize table
+				if (window.localStorage.length - 1) {
+					var Session_list = [], i, key;
+					for (i = 0; i < window.localStorage.length; i++) {
+						key = window.localStorage.key(i);
+						if (/Session:\d+/.test(key)) {
+							Session_list.push(JSON.parse(window.localStorage.getItem(key)));
+						}
+					}
+
+					if (Session_list.length) {
+						Session_list
+							.sort(function(a, b) {
+								return a.id < b.id ? -1 : (a.id > b.id ? 1 : 0);
+							})
+							.forEach(Session.tableAdd);
+					}
+				}
+				Session.$table.addEventListener("click", function(event) {
+					var op = event.target.getAttribute("data-op");
+					if (/edit|remove/.test(op)) {
+						var entry = JSON.parse(window.localStorage.getItem("Session:"+ event.target.getAttribute("data-id")));
+						if (op == "edit") {
+							Session.$form.report_name.value = entry.report_name;
+							Session.$form.report_role.value =            entry.report_role;
+							Session.$form.description.value = entry.description;
+Session.$form.user.value = entry.user;
+Session.$form.type.value = entry.type;
+Session.$form.clientIP.value = entry.clientIP;
+Session.$form.cookies.value = entry.cookies;
+Session.$form.material.value = entry.material;
+Session.$form.token.value = entry.token;
+Session.$form.global_index.value = entry.global_index;
+							Session.$form.id_entry.value = entry.id;
+						}
+						else if (op == "remove") {
+							if (confirm('Are you sure you want to remove "'+ entry.report_name +' '+ entry.report_role +'" from your Session?')) {
+								Session.storeRemove(entry);
+								Session.tableRemove(entry);
+							}
+						}
+						event.preventDefault();
+					}
+				}, true);
+			},
+
+			storeAdd: function(entry) {
+				entry.id = Session.index;
+				window.localStorage.setItem("Session:index", ++Session.index);
+				window.localStorage.setItem("Session:"+ entry.id, JSON.stringify(entry));
+			},
+			storeEdit: function(entry) {
+				window.localStorage.setItem("Session:"+ entry.id, JSON.stringify(entry));
+			},
+			storeRemove: function(entry) {
+				window.localStorage.removeItem("Session:"+ entry.id);
+			},
+
+			tableAdd: function(entry) {
+				var $tr = document.createElement("tr"), $td, key;
+				for (key in entry) {
+					if (entry.hasOwnProperty(key)) {
+						$td = document.createElement("td");
+						$td.appendChild(document.createTextNode(entry[key]));
+						$tr.appendChild($td);
+					}
+				}
+				$td = document.createElement("td");
+				$td.innerHTML = '<a data-op="edit" data-id="'+ entry.id +'">Edit</a> | <a data-op="remove" data-id="'+ entry.id +'">Remove</a>';
+				$tr.appendChild($td);
+				$tr.setAttribute("id", "entry-"+ entry.id);
+				Session.$table.appendChild($tr);
+			},
+			tableEdit: function(entry) {
+				var $tr = document.getElementById("entry-"+ entry.id), $td, key;
+				$tr.innerHTML = "";
+				for (key in entry) {
+					if (entry.hasOwnProperty(key)) {
+						$td = document.createElement("td");
+						$td.appendChild(document.createTextNode(entry[key]));
+						$tr.appendChild($td);
+					}
+				}
+				$td = document.createElement("td");
+				$td.innerHTML = '<a data-op="edit" data-id="'+ entry.id +'">Edit</a> | <a data-op="remove" data-id="'+ entry.id +'">Remove</a>';
+				$tr.appendChild($td);
+			},
+			tableRemove: function(entry) {
+				Session.$table.removeChild(document.getElementById("entry-"+ entry.id));
+			}
+		};
+		Session.init();
+	</script>
+
+
+
+</body></html>

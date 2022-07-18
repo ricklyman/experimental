@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pull KV into localStorage</title>
+</head>
+<body>
+    <h3>/api/kv</h3>
+     <p>
+     <label><input value="Get KV" onclick="getKV()" type="button"> <i>*
+Get KV local (8088) trafalgar-indiana</i></label>
+     </p>
+	<script>
+/***
+https://jasonwatmore.com/post/2021/09/06/fetch-http-get-request-examples
+https://stackblitz.com/edit/fetch-http-get-request-examples?file=get-request-error-handling.js
+***/
+//{{{
+function getKV() {
+
+// GET request using fetch with error handling
+//const element = document.querySelector('#get-request-error-handling');
+fetch('http://192.168.1.12:8088/api/kv')
+    .then(async response => {
+        const isJson = response.headers.get('content-type')?.includes('application/json');
+        const data = isJson && await response.json();
+
+        // check for error response
+        if (!response.ok) {
+            // get error message from body or default to response status
+            const error = (data && data.message) || response.status;
+            alert("8088: " + error);
+            return Promise.reject(error);
+        }
+        //alert("8081" + JSON.stringify(data));
+         localStorage.setItem('8088:kv', JSON.stringify(data));
+	     alert('KV added to localStorage');
+        //element.innerHTML = data;
+    })
+    .catch(error => {
+        alert("8088: " + error);
+        //element.parentElement.innerHTML = `Error: ${error}`;
+        console.error('There was an error!', error);
+    });
+}
+//}}}
+	</script>
+</body>
+</html>

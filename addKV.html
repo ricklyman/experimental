@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add New Key/Value</title>
+</head>
+<body>
+    <h3>/api/kv/addNew</h3>
+    <form action="/api/kv/addNew" method="POST">
+        <label for="name">Name:</label><br>
+        <input type="text" id="name" name="name"><br>
+        <label for="value">value:</label><br>
+		<textarea id="value" name="value"> </textarea><br>
+        <label for="localIndex">Local Index:</label><br>
+        <input type="number" id="localIndex" name="localIndex"><br>
+        <label for="rating">Rating:</label><br>
+        <input type="number" id="rating" name="rating"><br>
+        <input type="submit" value="Submit">
+      </form>
+</body>
+</html>
