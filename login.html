@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+<head>										<!-- head -->
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" >		<!-- UTF-8 -->
+	<title>Login</title>
+	</head>
+
+        <body>
+<form>
+            <div class="mb-3">
+              <label for="username" class="form-label">Username</label>
+              <input required="" type="text" class="form-control" id="username" placeholder="Enter your username">
+            </div>
+
+            <div class="mb-3">
+              <label for="password" class="form-label">Password</label>
+              <input type="password" class="form-control" id="password" placeholder="Enter your password">
+            </div>
+            
+            <input class="btn btn-primary" type="submit" value="Submit">
+            
+          </form>
+<form style="display: none;">
+            <div class="mb-3">
+              <label for="confirmPassword" class="form-label">Please confirm your password</label>
+              <input type="password" class="form-control" id="confirmPassword" placeholder="Re-enter your password">
+            </div>
+            
+            <input class="btn btn-primary" type="submit" value="Submit">
+			
+</form>
+            <div id="result"></div>
+			<script>
+				class LoginController {
+					constructor(username, password) {
+					  this.username = username;
+					  this.password = password;
+					  this.currentId = 0; //temporary //database id, from post
+					  this.items = [] //local id, task 04, replaces currentID on fetch as noted below
+					}
+					addItem() {
+					//using form for now, fetch later
+					this.currentId = this.items.length //localStorage temporary global array? page, site, each fetch, ...
+					}
+				  }
+				
+				let form = document.getElementsByTagName("form")[0];
+				let formConfirm = document.getElementsByTagName("form")[1];
+
+				form.onsubmit = function (e) {
+				  e.preventDefault();
+				//does a registration exist
+				let registrationId = localStorage.getItem("RegistrationController:index"); 
+				//console.log('registrationId: ' + registrationId);
+				//No alert user and transfer to registration page
+				if (!registrationId || Number.isNaN(registrationId) || registrationId == 0) {
+					//console.log(': no Registration: ' + registrationId);
+					alert("Registration required");
+					location.href = "./form-registration.html";
+				}
+				//Yes
+				//Test Registration email v form username
+				let compareLogin2Registration = localStorage.getItem('RegistrationController' + parseInt(registrationId, 0));
+				//console.log('compareLogin2Registration: ' + compareLogin2Registration);
+				//console.log('compareLogin2Registration.email: ' + compareLogin2Registration.email);
+				objRegistration = JSON.parse(compareLogin2Registration);
+				//console.log('objRegistration.email: ' + objRegistration.email);
+                if (form[0].value != objRegistration.email) {
+					alert("Use email address (" + objRegistration.email + ") for username");
+				    return;
+				}
+				//console.log('objRegistration.email: ' + objRegistration.email);
+				//does a loginController exist
+				let loginControllerId = localStorage.getItem("LoginController:index"); 
+				//console.log('loginControllerId: ' + loginControllerId);
+				//No create one using registration data
+				if (!loginControllerId || Number.isNaN(registrationId) || registrationId == 0) {
+					console.log('no loginController Id: ' + loginControllerId);
+					//let formLogin = new LoginController(form[0].value, form[1].value);
+					localStorage.setItem("LoginController:index", 0);
+					//console.log('formLogin: ' + formLogin);
+					console.log('temporary index created: ' + localStorage.getItem("LoginController:index"));
+					//let data = JSON.stringify(formLogin.username);
+					//localStorage.setItem("LoginController1", data);
+					//console.log('formLogin data: ' + data);
+					console.log('first use: password');
+		           //confirm password
+		          formConfirm.style.display = "block";
+				}
+				if (loginControllerId > 0) {
+					console.log('Previous use: password');
+                 //compare test encryption to prior encryption
+				 console.log('ToDoRL');
+				 formData = Tea.encrypt(form[0].value, form[1].value);
+				 storedData = localStorage.getItem("LoginController1");
+				 console.log('formData: ' + formData + ' storedData: ' + storedData);
+				 //if success
+				 if (formData == storedData) {
+					session = Math.floor(Math.random() * 9310);
+					document.getElementById('result').innerHTML = `New Login added:&nbsp Userame: <strong><em>${form[0].value}</strong></em>&nbsp ID: ${session}<strong><em>2</em></strong>&nbsp`	
+				 } else {
+					alert("Incorrect password");
+					location.href = "./login.html"; //future password recovery
+				 }
+                 //o/w alert and reload via location.href = login.html
+				}
+				//Yes if 0 submit below
+				//o/w (index > 0) cross check encryption
+				//Test Registration email v form username
+				//let compareLogin2Registration = localStorage.getItem('RegistrationController' + parseInt(registrationId, 0));
+				//console.log('compareLogin2Registration: ' + compareLogin2Registration);
+				//console.log('compareLogin2Registration.email: ' + compareLogin2Registration.email);
+				//objRegistration = JSON.parse(compareLogin2Registration);
+				//console.log('objRegistration.email: ' + objRegistration.email);
+
+				}
+                
+				formConfirm.onsubmit = function (e) {
+                e.preventDefault();
+				//confirm password match
+                if (form[1].value == formConfirm[1].value) {
+                console.log("Passwords match");
+				}
+				//else alert password does not match set location for retry
+                //loginController index at zero password entries match 0 
+				//create first entry and encrypt
+				let loginControllerId = localStorage.getItem("LoginController:index"); 
+				console.log('loginControllerId: ' + loginControllerId);
+				//No create one using registration data
+				if (!loginControllerId || Number.isNaN(loginControllerId) || loginControllerId == 0) {
+					console.log('no loginController Id: ' + loginControllerId);
+					//let formLogin = new LoginController(form[0].value, form[1].value);
+					localStorage.setItem("LoginController:index", 1);
+					//console.log('formLogin: ' + formLogin);
+					console.log('temporary index created: ' + localStorage.getItem("LoginController:index"));
+					//let data = JSON.stringify(formLogin.username);
+					//let data = formLogin.username;
+					data = Tea.encrypt(form[0].value, form[1].value);
+					localStorage.setItem("LoginController1", data);
+					console.log('formLogin data: ' + data);
+					console.log('first use: password');
+		           //confirm password confirmed 
+		          formConfirm.style.display = "none";
+				  session = Math.floor(Math.random() * 9310);
+				  document.getElementById('result').innerHTML = `New Login added:&nbsp Userame: <strong><em>${form[0].value}</strong></em>&nbsp ID: ${session}<strong><em>1</em></strong>&nbsp`
+				}
+			
+				
+
+                }
+				</script>
+			<script src="https://greasyfork.org/scripts/12124-wheeler-needham-s-tiny-encryption-algorithm-in-js-form/code/Wheeler%20%20Needham%E2%80%99s%20Tiny%20Encryption%20Algorithm%20in%20js%20form.js?version=71602"></script>
+        </body>
+    </html>
+

@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Form Page</title>
+    <!--Bootstrap Link/CSS-->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3"
+      crossorigin="anonymous"
+    />
+  </head>
+  <body>
+    <!--NavBar-->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <div class="container-fluid">
+  
+        <a class="navbar-brand" href="index.html">The <em><strong>GR8T</strong></em> Furniture Store</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+  
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+              <a class="nav-link active" aria-current="page" href="./index.html">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="./products.html">Product</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="./about.html">About</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="./form-login.html">Login</a>
+            </li>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Dropdown
+              </a>
+              <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <li><a class="dropdown-item" href="./form-item-input.html">Admin</a></li>
+                
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item" href="./product-item-sofa.html">Sofa-sample product</a></li>
+                
+              </ul>
+            </li>
+            
+          </ul>
+          <form class="d-flex">
+            <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+            <button class="btn btn-outline-success" type="submit">Search</button>
+          </form>
+        </div>
+      </div>
+    </nav>
+
+    <br />
+
+    <div class="container">
+      <form>
+        <p>* Indicates required information</p>
+        <!--Full Name-->
+        <div class="details">
+          <h1>Customer Registration</h1>
+          <br />
+          <h4>Full name</h4>
+
+          <!--First Name-->
+          <label for="first"></label>
+          <input
+            id="first"
+            name="first"
+            type="text"
+            placeholder="First Name"
+            required="true" 
+          />*
+          <br />
+          <label for="first"></label>
+          <br />
+
+          <!--Last Name-->
+          <label for="last"></label>
+          <input
+            id="last"
+            name="last"
+            type="text"
+            placeholder="Last Name"
+            required
+          />*
+          <br />
+          <label for="last"></label>
+          
+          <br />
+
+          <!--Address-->
+          <h4>Address</h4>
+          <label for="address"></label>
+          <input
+            id="address"
+            name="address"
+            type="text"
+            placeholder="Street Address"
+            required
+          />
+          *
+          <br />
+          <br />
+
+          <!--Add 2-->
+          <label for="add2"></label>
+          <input
+            id="add2"
+            name="add2"
+            type="text"
+            placeholder="Street Address Line 2"
+          />
+          <br />
+          <br />
+
+          <!--City-->
+          <label for="city"></label>
+          <input
+            id="city"
+            name="city"
+            type="text"
+            placeholder="City"
+            required
+          />
+          *
+          <br />
+          <br />
+
+          <!--State dropdown box-->
+          <label for="state"></label>
+          <select id="state" name="state">
+            <option value="blank">State</option>
+            <option value="AL">Alabama</option>
+            <option value="AK">Alaska</option>
+            <option value="AZ">Arizona</option>
+            <option value="AR">Arkansas</option>
+            <option value="CA">California</option>
+            <option value="CO">Colorado</option>
+            <option value="CT">Connecticut</option>
+            <option value="DE">Delaware</option>
+            <option value="DC">District Of Columbia</option>
+            <option value="FL">Florida</option>
+            <option value="GA">Georgia</option>
+            <option value="HI">Hawaii</option>
+            <option value="ID">Idaho</option>
+            <option value="IL">Illinois</option>
+            <option value="IN">Indiana</option>
+            <option value="IA">Iowa</option>
+            <option value="KS">Kansas</option>
+            <option value="KY">Kentucky</option>
+            <option value="LA">Louisiana</option>
+            <option value="ME">Maine</option>
+            <option value="MD">Maryland</option>
+            <option value="MA">Massachusetts</option>
+            <option value="MI">Michigan</option>
+            <option value="MN">Minnesota</option>
+            <option value="MS">Mississippi</option>
+            <option value="MO">Missouri</option>
+            <option value="MT">Montana</option>
+            <option value="NE">Nebraska</option>
+            <option value="NV">Nevada</option>
+            <option value="NH">New Hampshire</option>
+            <option value="NJ">New Jersey</option>
+            <option value="NM">New Mexico</option>
+            <option value="NY">New York</option>
+            <option value="NC">North Carolina</option>
+            <option value="ND">North Dakota</option>
+            <option value="OH">Ohio</option>
+            <option value="OK">Oklahoma</option>
+            <option value="OR">Oregon</option>
+            <option value="PA">Pennsylvania</option>
+            <option value="RI">Rhode Island</option>
+            <option value="SC">South Carolina</option>
+            <option value="SD">South Dakota</option>
+            <option value="TN">Tennessee</option>
+            <option value="TX">Texas</option>
+            <option value="UT">Utah</option>
+            <option value="VT">Vermont</option>
+            <option value="VA">Virginia</option>
+            <option value="WA">Washington</option>
+            <option value="WV">West Virginia</option>
+            <option value="WI">Wisconsin</option>
+            <option value="WY">Wyoming</option>
+          </select>
+          *
+          <br />
+          <br />
+
+          <!--Postal/Zip Code-->
+          <label for="zipcode"></label>
+          <input
+            id="zipcode"
+            name="zipcode"
+            type="text"
+            placeholder="Postal/Zip Code"
+            required
+          />*
+          <br />
+          <br />
+
+          <!--Contact Info-->
+          <h4>Contact information</h4>
+          <label for="phone"></label>
+          <input
+            id="phone"
+            name="phone"
+            type="tel"
+            placeholder="Phone Number"
+            minlength="10"
+            maxlength="12"
+            required
+          />*
+          <!--HOW OR AM I ABLE TO FORMAT PHONE NUMBER IN (XXX-XXX-XXXX)-->
+          <br />
+          <br />
+
+          <label for="email"></label>
+          <input
+            id="email"
+            name="email"
+            type="email"
+            placeholder="E-mail Address"
+            required
+          />
+          *
+          <br />
+        </div>
+        <br />
+
+		<input class="btn btn-primary" type="submit" value="Submit">
+        
+      </form>
+	  <br>
+    <div id="result"></div>
+    </div>
+<script>
+class RegistrationController {
+    constructor(first, last, address, add2, city, state, zipcode, phone, email) {
+      this.first = first;
+      this.last = last;
+      this.address = address; 
+      this.add2 = add2;
+      this.city = city;
+	    this.state = state;
+  	  this.zipcode = zipcode;
+      this.phone = phone;
+	    this.email = email;
+      this.currentId = 0; //temporary //database id, from post
+      this.items = [] //local id, task 04, replaces currentID on fetch as noted below
+    }
+    addItem() {
+    //using form for now, fetch later
+    this.currentId = this.items.length //localStorage temporary global array? page, site, each fetch, ...
+    }
+  }
+
+let form = document.getElementsByTagName("form")[1];
+
+form.onsubmit = function (e) {
+  e.preventDefault();
+  let formRegistration = new RegistrationController(form[0].value, form[1].value, form[2].value, form[3].value, form[4].value, form[5].value, form[6].value, form[7].value, form[8].value)
+  let currentId = localStorage.getItem("RegistrationController:index");
+  //formRegistration.currentId
+  console.log('formRegistration: ' + formRegistration);
+  console.log("id: " + localStorage.getItem("RegistrationController:index"));
+  console.log('formRegistration.currentId: ' + formRegistration.currentId);
+  let data = JSON.stringify(formRegistration)
+  let name = 'RegistrationController' + parseInt(formRegistration.currentId + 1,0); 
+  localStorage.setItem(name, data);
+  localStorage.setItem("RegistrationController:index", parseInt(formRegistration.currentId + 1,0));
+  //save(data); //server
+  document.getElementById('result').innerHTML = `New registration added:&nbsp First Name: <strong><em>${formRegistration.first}</strong></em>&nbsp Last Name: <strong><em>${formRegistration.last}</em></strong>&nbsp Phone: <em><strong>${formRegistration.phone}</em></strong>&nbsp Email: <strong><em>${formRegistration.email}</em></strong>&nbsp Zip Code: <em><strong>${formRegistration.zipcode}</em></strong>`
+}
+  </script>
+
+    <!--Bootstrap Bundle code-->
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
+      crossorigin="anonymous"
+    ></script>
+  </body>
+</html>
