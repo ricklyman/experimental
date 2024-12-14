@@ -1,11 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>Search Github</title>
+  <title>Search LocalStorage</title>
   <!-- You MUST include jQuery 3.4+ before Fomantic -->
   <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
   <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/fomantic-ui@2.9.3/dist/semantic.min.css">
   <script src="https://cdn.jsdelivr.net/npm/fomantic-ui@2.9.3/dist/semantic.min.js"></script>
+  <style type="text/css">
+    body {
+      background-color: #DADADA;
+    }
+    body > .grid {
+      height: 100%;
+    }
+  </style>
+
   <script>
     function setAction(form) {
 //  form.action = "/save/" + document.forms.editor.name.value + `?body=${encodeURIComponent(document.forms.editor.data.value)}`; //works
@@ -36,52 +45,57 @@ return false;
     GitHub
   </a>
   <div class="right menu">
-    <div class="item">
-    </div>
-    <a class="ui item">
-      Login
-    </a>
-  </div>
+    <div class="ui search">
+      <div class="ui icon input">
+        <input class="prompt" type="text" placeholder="Search localstorage..." id="test2">
+        <i class="search icon"></i>
+      </div>
+      <div class="results"></div>
+   </div>
+    <button class="mini ui button" onclick="login(event)">Login</button>
+ </div>
 </div>
+
 <form id="editor" name="editor" onsubmit="return setAction(this)" method="POST">
 
-  <fieldset>
-    <legend><h3>Name / Value</h3></legend>
-    <p>
-      <input class="ui button" type="file" id="file-selector" multiple>
-    </p>
+ <fieldset>
+   <legend><h3>Name / Value</h3></legend>
+   <p>
+     <input class="ui button" type="file" id="file-selector" multiple>
+   </p>
 
-    <!-- associated label -->
+   <!-- associated label -->
     <!-- <label for="name">Name</label> -->
     <p>
       <label><b>Name </b>
-        <div class="ui search">
-          <div class="ui icon input">
-            <input class="prompt" type="text" placeholder="Search localstorage..." id="test2">
-            <i class="search icon"></i>
-          </div>
-          <div class="results"></div>
+          <input id="name" value="foo" name="name" size="60"></label>
+      <input class="mini ui teal button" value="Edit" onclick="doGetItem()" type="button">
 
+      <input class="mini ui teal button" value="Save" onclick="doSetItem()" type="button">
+      <input class="mini ui teal button" value="Run" onclick="doEvalItem()" type="button">
+      <input class="mini ui teal button" value="Save to File" onclick="save(localStorage.getItem(document.forms.editor.name.value))" type="button">
 
-      <input class="ui button" value="Load" onclick="doGetItem()" type="button">
+      <input class="mini ui teal teal button" value="Delete" onclick="doRemoveItem()" type="button">
+      <button class="mini ui teal button" onclick="newNote(event)">Display</button>
 
-      <input class="ui button" value="Save" onclick="doSetItem()" type="button">
-      <input class="ui button" value="Run" onclick="doEvalItem()" type="button">
-      <input class="ui button" value="Save to File" onclick="save(localStorage.getItem(document.forms.editor.name.value))" type="button">
-
-      <input class="ui button" value="Delete" onclick="doRemoveItem()" type="button">
-      <button class="ui button" onclick="newNote(event)">New Note</button>
-        </div>
-      </label>
     </p>
     <label for="value"><b>Value</b></label>
     <p>
       <textarea id="value" name="data" cols="80" rows="20">bar</textarea>
+
     </p>
+   <div>
+     <input class="mini ui teal button" id="submit" type="submit" value="Save to Server">
+   </div>
   </fieldset>
-  <div>
-    <input id="submit" type="submit" value="Save to Server">
+
+  <div class="ui message">
+    <div class="header" id="resultHeader">
+      Display as HTML
+    </div>
+    <p><div id="result">a b c</div></p>
   </div>
+
 </form>
 <div id="items_table">
   <fieldset>
@@ -94,7 +108,12 @@ return false;
 <script>
   function newNote(event) {
     event.preventDefault();
-    alert(document.forms.editor.name.value);
+    //alert(document.forms.editor.name.value);
+    var result = document.getElementById('result');
+    //alert( localStorage.getItem(document.forms.editor.name.value));
+    result.innerHTML = localStorage.getItem(document.forms.editor.name.value);
+    var resultHeader = document.getElementById('resultHeader');
+    resultHeader.innerHTML = document.forms.editor.name.value;
   }
 </script>
 <script>
@@ -105,17 +124,17 @@ return false;
     var name = document.forms.editor.name.value;
     var data = document.forms.editor.data.value;
 
- localStorage.setItem(name, JSON.stringify(data));
+ localStorage.setItem(name, data);
  // localStorage.setItem(name, data);
     sync('GET',name,data);
     doShowAll();
   }
 
   function doGetItem() {
-    //var name = document.forms.editor.name.value;
-    var name = document.getElementById('test2');
+    var name = document.forms.editor.name.value;
+    //var name = document.getElementById('test2');
     //alert(name.value);
-    document.forms.editor.data.value = localStorage.getItem(name.value);
+    document.forms.editor.data.value = localStorage.getItem(name);
     doShowAll();
   }
 
