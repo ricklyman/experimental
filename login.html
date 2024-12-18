@@ -46,7 +46,7 @@
                                 <input id="password" type="password" name="password" placeholder="Password">
                             </div>
                         </div>
-                        <div class="ui fluid large teal submit button">Login</div>
+                        <div class="ui fluid large teal submit button" onclick="login(event)">Login</div>
                     </div>
 
                     <div class="ui error message"></div>
@@ -83,6 +83,34 @@
 </form>
             <div id="result"></div>
 			<script>
+                function login(e) {
+                alert('login btn');
+                 var name = document.getElementById('result');
+                //name.value = localStorage.getItem(name);
+                name.innerHTML = 'login button clicked<br />';
+                var username = document.getElementById('username');
+                name.innerHTML = name.innerHTML + username.value + '<br />';
+                let form = document.getElementsByTagName("form")[0] + '[0] <br />';
+                name.innerHTML = name.innerHTML + form[0].value;
+                let form1 = document.getElementsByTagName("form")[1] + '[1] <br />';
+                name.innerHTML = name.innerHTML + form1[1].value;
+                let form2 = document.getElementsByTagName("form")[2] + '[2] <br />';
+                name.innerHTML = name.innerHTML + form2[2].value;
+                var key = 'username';
+                var data = JSON.stringify(username);
+                 localStorage.setItem(name, data);
+                 document.forms.editor.data.value = localStorage.getItem(name);
+                 //compare
+                 //use form approach
+                 //file:///home/rlyman/experimental/contacts.html
+                 //Contacts:index 0, 1 as scratch?
+                 //query for current index
+                 //query each key does user e mail exist?
+                 //using password does encrypted email exist
+                 //remove duplicates?
+
+                };
+
 				class LoginController {
 					constructor(username, password) {
 					  this.username = username;
