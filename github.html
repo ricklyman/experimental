@@ -36,9 +36,9 @@ form.action = "/view/" + document.forms.editor.name.value //works + `?body=${enc
   </a>
   <div class="right menu">
     <div class="item">
-		<div class="ui search">
+		<div class="ui search fluid">
   <div class="ui left icon input">
-    <input class="prompt" type="text" placeholder="Search GitHub">
+    <input class="prompt" type="text" placeholder="Search GitHub" size="75">
     <i class="github icon"></i>
   </div>
 </div>
@@ -110,7 +110,8 @@ form.action = "/view/" + document.forms.editor.name.value //works + `?body=${enc
       //doRemoveItem()	
 	function doSetItem() {
 
-       var name = document.forms.editor.name.value;
+       var name = 'github:' + document.forms.editor.name.value;
+       //var name = document.forms.editor.name.value;
 
        var data = document.forms.editor.data.value;
 
@@ -126,7 +127,7 @@ form.action = "/view/" + document.forms.editor.name.value //works + `?body=${enc
 
      function doGetItem() {
 
-       var name = document.forms.editor.name.value;
+       var name = 'github:' + document.forms.editor.name.value;
 
        document.forms.editor.data.value = localStorage.getItem(name);
 
@@ -138,7 +139,7 @@ form.action = "/view/" + document.forms.editor.name.value //works + `?body=${enc
 
      function doRemoveItem() {
 
-       var name = document.forms.editor.name.value;
+       var name = 'github:' + document.forms.editor.name.value;
 
        document.forms.editor.data.value = localStorage.removeItem(name);
 
@@ -147,7 +148,12 @@ form.action = "/view/" + document.forms.editor.name.value //works + `?body=${enc
      }
 		
 		function setForm(name) {
-	  document.forms.editor.name.value = name;
+		var test = name
+    //alert(test.substring(0, test.indexOf(":")))
+
+
+	  //document.forms.editor.name.value = name;
+	  document.forms.editor.name.value = test.substring(test.indexOf(":")+1,test.length);
 	  document.forms.editor.data.value = localStorage.getItem(name);
 		}
 		
@@ -163,10 +169,15 @@ form.action = "/view/" + document.forms.editor.name.value //works + `?body=${enc
        for (i=0; i<=localStorage.length-1; i++) {
 
          key = localStorage.key(i);
-
-       //  pairs += "<tr><td>"+key+"</td>\n<td onClick=\"setForm('" + key + "')\">"+localStorage.getItem(key)+"</td></tr>\n";
+         if(key.substring(0, key.indexOf(":")) == 'github') {
+         alert(key.substring(0, key.indexOf(":")));
+                //  pairs += "<tr><td>"+key+"</td>\n<td onClick=\"setForm('" + key + "')\">"+localStorage.getItem(key)+"</td></tr>\n";
   pairs += "<tr><td>"+i+"</td>\n<td onClick=\"setForm('" + key + "')\">"+key+"</td></tr>\n";
-		   
+
+         }
+
+
+
        }
 
        if (pairs == "<tr><th>Name</th><th>Value</th></tr>\n") {
