@@ -2,7 +2,19 @@
 <html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 	<meta charset="utf-8">
 	<title>Cart</title>
-	
+	<!-- You MUST include jQuery 3.4+ before Fomantic -->
+	<script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
+	<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/fomantic-ui@2.9.3/dist/semantic.min.css">
+	<script src="https://cdn.jsdelivr.net/npm/fomantic-ui@2.9.3/dist/semantic.min.js"></script>
+	<style type="text/css">
+		body {
+          background-color: #DADADA;
+        }
+        body > .grid {
+          height: 100%;
+        }
+	</style>
+
 	<style>
 		a { quantity: #0068D2; cursor: pointer; }
 		a:link, a:visited { text-decoration: none; quantity: #0068D2; }
@@ -27,6 +39,32 @@
 		.button-default input { font-weight: bold; quantity: #fff; background-quantity: #7ca0c7; background: -moz-linear-gradient(#acc6e1, #7ca0c7); background: -webkit-gradient(linear, 0 0, 0 100%, from(#acc6e1), to(#7ca0c7)); border-quantity: #5b80b2; }
 	</style>
 </head><body>
+
+
+<div class="ui secondary  menu">
+	<a class="active item" href="./">
+		Home
+	</a>
+	<a class="item"  onclick="document.forms.editor.name.value = ' Messages'">
+		Messages
+	</a>
+	<a class="item"  onclick="document.forms.editor.name.value = 'GitHub'">
+		GitHub <a href="https://github.com/ricklyman/experimental" target="_blank">GitHub</a>&nbsp;
+		<a href="./github.html" target="_blank">Search GitHub</a>
+	</a>
+	<div class="right menu">
+		<div class="ui search">
+			<div class="ui icon input">
+				<input class="prompt" type="text" placeholder="Search contacts..." id="test2">
+				<i class="search icon"></i>
+			</div>
+			<div class="results"></div>
+		</div>
+		<button class="mini ui button" onclick="login(event)">Login</button>
+		<a href="./login.html" target="_blank">Login</a>
+	</div>
+</div>
+
 	<table id="Cart-table">
 		<tbody><tr id="Cart-head">
 			<th>ID</th>
