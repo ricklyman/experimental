@@ -247,8 +247,8 @@
         function getRequest() {
             // Simple GET request using fetch
             const element = document.querySelector('#get-request');
-            fetch('http://172.56.248.208:3333/players/all', {
-            mode: 'cors'
+            fetch('http://localhost:3333/players/all', {
+            mode: 'no-cors'
             })
                 .then(response => response.json())
                 .then(data => element.innerHTML = JSON.stringify(data));
