@@ -247,7 +247,8 @@
         function getRequest() {
             // Simple GET request using fetch
             const element = document.querySelector('#get-request');
-            fetch('http://localhost:3333/players/all?name=name&age=12', {
+            //server records the data
+            fetch('http://localhost:3333/players/all?name=George&age=12', {
             mode: 'no-cors'
             })
                 .then(response => response.json())
