@@ -263,15 +263,6 @@
             //server records the data
             fetch('https://ricklyman.com/kv/1', {
             })
-                .then(        if (response === undefined) {
-          console.log("response is undefined");
-        } else {
-        console.log(typeof response); // Output: "object"
-        console.log(response instanceof Object); // Output: true
-        console.log(response);
-        console.log(Object.keys(response));
-        console.log(response.data);
-        });
                 .then(response => response.json())
                 .then(data => element.innerHTML = JSON.stringify(data));
         }
@@ -337,26 +328,26 @@
                     //document.write("<br><br>array index: " + i);
 
                     var obj = data[i];
-                    console.log(JSON.stringify(obj));
+                    //console.log(JSON.stringify(obj));
                     //{"id":51,"name":"Bar Foo","age":null,"years_of_experience":5,"rating":null}
-                    window.localStorage.setItem('players:'+obj["id"], JSON.stringify(obj));
-                    window.localStorage.setItem('players:index', JSON.stringify(obj["id"]));
+                    window.localStorage.setItem('card:'+obj["id"], JSON.stringify(obj));
+                    window.localStorage.setItem('card:index', JSON.stringify(obj["id"]));
                     //console.log("obj: " + obj);
                     for (var key in obj) {
                         var value = obj[key];
-                        //document.write("<br> - " + key + ": " + value);
+                        document.write("<br> - " + key + ": " + value);
                         //console.log(JSON.stringify(value));
-                        //window.localStorage.setItem('playerid', JSON.stringify(value));
+                        window.localStorage.setItem('cardid', JSON.stringify(value));
 
-                        /* var entry = {
+                         var entry = {
                            "id": parseInt(key),
-                           "name": value[1],
-                           "age": value[2],
-                           "years_of_experience": value[3],
-                           "rating": value[4]
+                           "first_name": value[1],
+                           "last_name": value[2],
+                           "email": value[3],
+                           "avatar": value[4]
                           };
                           console.log(entry)
-                         } */
+                         }
                     }
 
 
