@@ -94,7 +94,8 @@ const makeRequest = async () => {
     try {
         let response = await fetch("https://reqres.in/api/users"); //https://reqres.in/api/users/23
         //let response = await localStorage.getItem("https://reqres.in/api/users");
-        console.log('A: ' + Object.keys(response));
+        console.log('A: ' + response);
+        //console.log('A: ' + Object.keys(response));
                //response.ok = true; //temp
                //response.status = "200"; //temp
                if(!response.ok){
