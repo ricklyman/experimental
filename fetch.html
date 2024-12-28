@@ -26,6 +26,7 @@
         onclick="postRequestErrorHandling()">postRequestErrorHandling</button>
     <div id='post-request-set-headers'>...</div><button onclick="postRequestSetHeaders()">postRequestSetHeaders</button>
     <div id='get-request'>...</div><button onclick="getRequest()">getRequest</button>
+    <div id='get-request-2'>...</div><button onclick="getRequest2()">getRequest 2 ricklyman.com/kv/1</button>
     <div id='get-request-async-await'>...</div><button onclick="getRequestAsyncAwait()">getRequestAsyncAwait</button>
     <div id='get-request-error-handling'>...</div><button
         onclick="getRequestErrorHandling()">getRequestErrorHandling</button>
@@ -249,6 +250,18 @@
             const element = document.querySelector('#get-request');
             //server records the data
             fetch('http://localhost:3333/players/all?name=George&age=12', {
+            mode: 'no-cors'
+            })
+                .then(response => response.json())
+                .then(data => element.innerHTML = JSON.stringify(data));
+        }
+    </script>
+    <script>
+        function getRequest2() {
+            // Simple GET request using fetch
+            const element = document.querySelector('#get-request');
+            //server records the data
+            fetch('https://ricklyman.com/kv/1?name=George&age=12', {
             mode: 'no-cors'
             })
                 .then(response => response.json())
