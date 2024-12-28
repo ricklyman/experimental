@@ -2,7 +2,6 @@ let html = "";
 let card = document.createElement('div');
 let elem = document.getElementById('displayUsers');
 
-/*
 fetch("https://reqres.in/api/users/23")
     .then(response => {
         // handle the response
@@ -22,15 +21,14 @@ fetch("https://reqres.in/api/users/23")
     elem.append(card);	
 
     });
-*/
 
 
 const makeRequest = async () => {
     try {
-        //let response = await fetch("https://reqres.in/api/users"); //https://reqres.in/api/users/23
-        let response = await localStorage.getItem("https://reqres.in/api/users");
-        console.log('A: ' + Object.keys(response));
-        /*        response.ok = true; //temp
+        let response = await fetch("https://reqres.in/api/users"); //https://reqres.in/api/users/23
+        //let response = await localStorage.getItem("https://reqres.in/api/users");
+        //console.log('A: ' + Object.keys(response));
+                response.ok = true; //temp
                response.status = "200"; //temp		
                if(!response.ok){
                    console.log('B: ' + Object.keys(response));
@@ -41,33 +39,33 @@ const makeRequest = async () => {
                    }
                    throw new Error(`There was an error with status of ${response.status}`)
                }
-          */     // let usersJson = response.json();
+               // let usersJson = response.json();
         let usersJson = JSON.parse(response);
         console.log('usersJson B: ' + usersJson);
         return usersJson;
     }
     catch (error) {
-        //     //console.log(error);
-        // 	if(response.status == '404') {
-        // 		let elem = document.getElementById('displayUsers');
-        //         card.innerHTML = '</h1>Page not found: ' + response.status + '</h1>';
-        //         elem.append(card);	
-        // 		}
-        //    //card.innerHTML =  '</h1>' + error + '</h1>';
-        //    //elem.append(card);	
-        //throw new Error(`There was an error with status of ${response.status}`)   
-        throw new Error(`There was an error with status of ${error}`)
+             //console.log(error);
+         	if(response.status == '404') {
+         		let elem = document.getElementById('displayUsers');
+                 card.innerHTML = '</h1>Page not found: ' + response.status + '</h1>';
+                 elem.append(card);
+         		}
+            //card.innerHTML =  '</h1>' + error + '</h1>';
+            //elem.append(card);
+        throw new Error(`There was an error with status of ${response.status}`)
+        //throw new Error(`There was an error with status of ${error}`)
     }
 }
 
 const anotherFunc = async () => {
     let response = await makeRequest(); //ToDo //usersJSON not response ...
-    console.log('C: response: ' + response);
-    //if (!response.ok) { //usersJSON 
-    //   card.innerHTML = '</h1>Page not found: ' + response.status + '</h1>';
-    //   elem.append(card);	
-    //   throw new Error(`There was an error with status of ${response.status}`)
-    //}
+    //console.log('C: response: ' + response);
+    if (!response.ok) { //usersJSON
+       card.innerHTML = '</h1>Page not found: ' + response.status + '</h1>';
+       elem.append(card);
+       throw new Error(`There was an error with status of ${response.status}`)
+    }
     //console.log('C: ');
     //console.log(response);
     //console.log(response.data);
@@ -114,10 +112,10 @@ const displayUser = function () {
     //elem.innerHTML = elem.innerHTML + html;
 }
 
-/*
+
 id="displayUsers"
 
-*/
+
 
 
 
