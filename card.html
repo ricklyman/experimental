@@ -96,12 +96,13 @@ const makeRequest = async () => {
         //let response = await localStorage.getItem("https://reqres.in/api/users");
         if (response === undefined) {
           console.log("response is undefined");
+        } else {
+        console.log(typeof response); // Output: "object"
+        console.log(response instanceof Object); // Output: true
+        console.log(response);
+        console.log(Object.keys(response));
+        console.log(response.data);
         }
-        console.log('A: '  + typeof response); // Output: "object"
-        console.log('B: '  + response instanceof Object); // Output: true
-        console.log('C: ' + response);
-        console.log('D: ' + Object.keys(response));
-        console.log('E: ' + response.data.length);
                //response.ok = true; //temp
                //response.status = "200"; //temp
                if(!response.ok){
