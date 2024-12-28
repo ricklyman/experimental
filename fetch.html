@@ -335,22 +335,22 @@
                     // window.localStorage.setItem('players:'+obj["id"], JSON.stringify(obj));
                     // window.localStorage.setItem('players:index', JSON.stringify(obj["id"]));
                     //console.log("obj: " + obj);
-                    for (var key in obj) {
-                        var value = obj[key];
+                    //for (var key in obj) {
+                        //var value = obj[key];
                         //document.write("<br> - " + key + ": " + value);
                         //console.log(JSON.stringify(value));
                         //window.localStorage.setItem('playerid', JSON.stringify(value));
                         // "id": parseInt(key),
                          var entry = {
-                           "id": value[0],
-                           "name": value[1],
-                           "age": value[2],
-                           "years_of_experience": value[3],
-                           "rating": value[4]
+                           "id": obj.id,
+                           "name": obj.name,
+                           "age": obj.age,
+                           "years_of_experience": obj.years_of_experience,
+                           "rating": obj.rating
                           };
                           console.log(entry)
                          //}
-                    }
+                    //}
 
 
             //    }
