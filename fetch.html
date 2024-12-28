@@ -262,7 +262,6 @@
             const element = document.querySelector('#get-request');
             //server records the data
             fetch('https://ricklyman.com/kv/1', {
-            mode: 'no-cors'
             })
                 .then(response => response.json())
                 .then(data => element.innerHTML = JSON.stringify(data));
