@@ -263,6 +263,15 @@
             //server records the data
             fetch('https://ricklyman.com/kv/1', {
             })
+                .then(        if (response === undefined) {
+          console.log("response is undefined");
+        } else {
+        console.log(typeof response); // Output: "object"
+        console.log(response instanceof Object); // Output: true
+        console.log(response);
+        console.log(Object.keys(response));
+        console.log(response.data);
+        });
                 .then(response => response.json())
                 .then(data => element.innerHTML = JSON.stringify(data));
         }
