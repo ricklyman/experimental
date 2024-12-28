@@ -107,7 +107,7 @@ const makeRequest = async () => {
                    throw new Error(`There was an error with status of ${response.status}`)
                }
                // let usersJson = response.json();
-        let usersJson = JSON.parse(response);
+        let usersJson = JSON.parse(response); //response valid?
         console.log('usersJson B: ' + usersJson);
         return usersJson;
     }
