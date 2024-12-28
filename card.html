@@ -96,6 +96,7 @@ const makeRequest = async () => {
         //let response = await localStorage.getItem("https://reqres.in/api/users");
         console.log('A: ' + response);
         console.log('B: ' + Object.keys(response));
+        console.log('C: ' + response.data.length);
                //response.ok = true; //temp
                //response.status = "200"; //temp
                if(!response.ok){
