@@ -351,15 +351,15 @@
                           console.log(entry)
                          //}
 
-                         const element = document.querySelector('#contacts-table');
+                         let element = document.querySelector('#contacts-table');
                          let table = "";
                          table = table + "<table><tr>";
-                         table = table + "<td> 'id': " + obj.id + "</>td>";
-                         table = table + "<td> 'name': " + obj.name + "</>td>";
-                         table = table + "<td> 'age': " + obj.age + "</>td>";
-                         table = table + "<td> 'years_of_experience': " + obj.years_of_experience + "</>td>";
-                         table = table + "<td> 'rating': " + obj.rating + "</>td>";
-                         table = table + "</>tr></table>";
+                         table = table + "<td>'id': " + obj.id + "</td>";
+                         table = table + "<td>'name': " + obj.name + "</td>";
+                         table = table + "<td>'age': " + obj.age + "</td>";
+                         table = table + "<td>'years_of_experience': " + obj.years_of_experience + "</td>";
+                         table = table + "<td>'rating': " + obj.rating + "</td>";
+                         table = table + "</tr></table>";
                          element.innerHTML = table;
                     //}
 
