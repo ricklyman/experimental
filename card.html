@@ -94,12 +94,12 @@ const makeRequest = async () => {
     try {
         let response = await fetch("https://reqres.in/api/users"); //https://reqres.in/api/users/23
         //let response = await localStorage.getItem("https://reqres.in/api/users");
-        console.log('A: ' + response.toString);
-        //console.log('A: ' + Object.keys(response));
+        console.log('A: ' + response);
+        console.log('B: ' + Object.keys(response));
                //response.ok = true; //temp
                //response.status = "200"; //temp
                if(!response.ok){
-                   console.log('B: ' + Object.keys(response));
+                   console.log('C: ' + Object.keys(response));
                    if(response.status == '404') {
                    let elem = document.getElementById('displayUsers');
                    card.innerHTML = '</h1>Page not found: ' + response.status + '</h1>';
@@ -109,7 +109,7 @@ const makeRequest = async () => {
                }
                // let usersJson = response.json();
         let usersJson = JSON.parse(response); //response valid?
-        console.log('usersJson B: ' + usersJson);
+        console.log('usersJson D: ' + usersJson);
         return usersJson;
     }
     catch (error) {
@@ -128,7 +128,7 @@ const makeRequest = async () => {
 
 const anotherFunc = async () => {
     let response = await makeRequest(); //ToDo //usersJSON not response ...
-    //console.log('C: response: ' + response);
+    //console.log('E: response: ' + response);
     if (!response.ok) { //usersJSON
        card.innerHTML = '</h1>Page not found: ' + response.status + '</h1>';
        elem.append(card);
