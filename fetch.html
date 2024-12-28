@@ -351,13 +351,16 @@
                           console.log(entry)
                          //}
 
-                         document.write("<table><tr>");
-                         document.write("<td> 'id': " + obj.id + "</>td>");
-                         document.write("<td> 'name': " + obj.name + "</>td>");
-                         document.write("<td> 'age': " + obj.age + "</>td>");
-                         document.write("<td> 'years_of_experience': " + obj.years_of_experience + "</>td>");
-                         document.write("<td> 'rating': " + obj.rating + "</>td>");
-                         document.write("</>tr></table>");
+                         const element = document.querySelector('#contacts-table');
+                         const table = "";
+                         table = table + "<table><tr>";
+                         table = table + "<td> 'id': " + obj.id + "</>td>";
+                         table = table + "<td> 'name': " + obj.name + "</>td>";
+                         table = table + "<td> 'age': " + obj.age + "</>td>";
+                         table = table + "<td> 'years_of_experience': " + obj.years_of_experience + "</>td>";
+                         table = table + "<td> 'rating': " + obj.rating + "</>td>";
+                         table = table + "</>tr></table>";
+                         element.innerHTML = table;
                     //}
 
 
