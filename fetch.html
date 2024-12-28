@@ -321,7 +321,9 @@
             (async () => {
                 // GET request using fetch with async/await
                 const response = await fetch('https://ricklyman.com/kv/1');
-                const data = await response.json();
+                //const data = await response.json();
+                const data = await response;
+
                 console.log("data: " + data);
                // for (var i = 0; i < data.length; i++) {
                     //document.write("<br><br>array index: " + i);
@@ -338,9 +340,9 @@
                         //document.write("<br> - " + key + ": " + value);
                         //console.log(JSON.stringify(value));
                         //window.localStorage.setItem('playerid', JSON.stringify(value));
-
+                        // "id": parseInt(key),
                          var entry = {
-                           "id": parseInt(key),
+                           "id": value[0],
                            "name": value[1],
                            "age": value[2],
                            "years_of_experience": value[3],
