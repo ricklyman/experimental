@@ -66,10 +66,10 @@
 
   <script>
     let html = "";
-let card = document.createElement('div');
-let elem = document.getElementById('displayUsers');
+    let card = document.createElement('div');
+    let elem = document.getElementById('displayUsers');
 
-fetch("https://reqres.in/api/users/12")
+fetch("https://reqres.in/api/users/12") //23 fails
     .then(response => {
         // handle the response
     if(!response.ok){
