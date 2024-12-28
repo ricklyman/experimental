@@ -320,34 +320,33 @@
             //console.log("populateTable: ");
             (async () => {
                 // GET request using fetch with async/await
-                //const response = await fetch('http://localhost:3333/players/all');
-                const response = await fetch('https://ricklyman.com/kv/1');
+                const response = await fetch('http://localhost:3333/players/all');
                 const data = await response.json();
                 //console.log("data: " + data);
                 for (var i = 0; i < data.length; i++) {
                     //document.write("<br><br>array index: " + i);
 
                     var obj = data[i];
-                    //console.log(JSON.stringify(obj));
+                    console.log(JSON.stringify(obj));
                     //{"id":51,"name":"Bar Foo","age":null,"years_of_experience":5,"rating":null}
-                    window.localStorage.setItem('card:'+obj["id"], JSON.stringify(obj));
-                    window.localStorage.setItem('card:index', JSON.stringify(obj["id"]));
+                    window.localStorage.setItem('players:'+obj["id"], JSON.stringify(obj));
+                    window.localStorage.setItem('players:index', JSON.stringify(obj["id"]));
                     //console.log("obj: " + obj);
                     for (var key in obj) {
                         var value = obj[key];
-                        document.write("<br> - " + key + ": " + value);
+                        //document.write("<br> - " + key + ": " + value);
                         //console.log(JSON.stringify(value));
-                        window.localStorage.setItem('cardid', JSON.stringify(value));
+                        //window.localStorage.setItem('playerid', JSON.stringify(value));
 
-                         var entry = {
+                        /* var entry = {
                            "id": parseInt(key),
-                           "first_name": value[1],
-                           "last_name": value[2],
-                           "email": value[3],
-                           "avatar": value[4]
+                           "name": value[1],
+                           "age": value[2],
+                           "years_of_experience": value[3],
+                           "rating": value[4]
                           };
                           console.log(entry)
-                         }
+                         } */
                     }
 
 
@@ -356,7 +355,7 @@
             })();
         }
 
-/* 
+/*
             // initialize table
             if (window.localStorage.length - 1) {
                 var contacts_list = [], i, key;
@@ -395,7 +394,7 @@
                 }
             }, true);
             */
-        </script>
+    </script>
     <button onclick="populateTable()">populateTable</button>
     <table id="contacts-table">
         <tbody>
