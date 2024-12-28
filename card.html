@@ -95,8 +95,8 @@ const makeRequest = async () => {
         let response = await fetch("https://reqres.in/api/users"); //https://reqres.in/api/users/23
         //let response = await localStorage.getItem("https://reqres.in/api/users");
         console.log('A: ' + Object.keys(response));
-               response.ok = true; //temp
-               response.status = "200"; //temp
+               //response.ok = true; //temp
+               //response.status = "200"; //temp
                if(!response.ok){
                    console.log('B: ' + Object.keys(response));
                    if(response.status == '404') {
