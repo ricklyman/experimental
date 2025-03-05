@@ -74,43 +74,6 @@ return false;
  </div>
 </div>
 
-<form id="editor" name="editor" onsubmit="return setAction(this)" method="POST">
-
- <fieldset>
-   <legend><h3>Name / Value</h3></legend>
-   <p>
-     <input class="ui button" type="file" id="file-selector" multiple>
-   </p>
-
-   <!-- associated label -->
-    <!-- <label for="name">Name</label> -->
-    <p>
-      <label><b>Name </b>
-          <input id="name" value="foo" name="name" size="60"></label>
-      <input class="mini ui teal button" value="Edit" onclick="doGetItem()" type="button">
-
-      <input class="mini ui teal button" value="Save" onclick="doSetItem()" type="button">
-      <input class="mini ui teal button" value="Run" onclick="doEvalItem()" type="button">
-      <input class="mini ui teal button" value="Save to File" onclick="save(localStorage.getItem(document.forms.editor.name.value))" type="button">
-
-      <input class="mini ui teal teal button" value="Delete" onclick="doRemoveItem()" type="button">
-      <button class="mini ui teal button" onclick="newNote(event)">Display</button>
-
-    </p>
-    <label for="value"><b>Value</b></label>
-    <p>
-      <textarea id="value" name="data" cols="80" rows="20">bar</textarea>
-
-    </p>
-   <div>
-     <input class="mini ui teal button" id="submit" type="submit" value="Save to Server">
-   </div>
-  </fieldset>
-
-  <div class="ui message">
-    <div class="header" id="resultHeader">
-      Display as HTML
-    </div>
     <p><div id="result"><pre>An NFPT (Non-Fungible Physical Token) is a type of physical asset designed for collecting and trading. Part of the token represents ownership or proof of authenticity. The NFPT is meant to be a unique item.
 
 THe NFPT may have multiple digital tokens associated with it:
@@ -134,7 +97,7 @@ THe NFPT may have multiple digital tokens associated with it:
 Buy Sell: lyman dot rick at gmail.com</pre></div></p>
   </div>
 
-</form>
+
 <div id="items_table">
   <fieldset>
     <legend><h3>Items</h3></legend>
