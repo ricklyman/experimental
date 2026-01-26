@@ -1,5 +1,3 @@
-https://ricklyman.com/jswasm/sqlite3.js   Cross-Origin-Embedder-Policy: require-corp
-                                          Cross-Origin-Opener-Policy: same-origin
-
-https://ricklyman.com/jswasm/sqlite3-worker1.js   Cross-Origin-Embedder-Policy: require-corp
-                                                  Cross-Origin-Opener-Policy: same-origin
+/wasm
+Cross-Origin-Opener-Policy: same-origin
+Cross-Origin-Embedder-Policy: require-corp
