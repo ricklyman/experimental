@@ -1,3 +1,11 @@
-/wasm
+https://ricklyman.com/wasm/*
+Cross-Origin-Opener-Policy: same-origin
+Cross-Origin-Embedder-Policy: require-corp
+
+https://ricklyman.com/jswasm/*
+Cross-Origin-Opener-Policy: same-origin
+Cross-Origin-Embedder-Policy: require-corp
+
+https://ricklyman.com/common/*
 Cross-Origin-Opener-Policy: same-origin
 Cross-Origin-Embedder-Policy: require-corp
