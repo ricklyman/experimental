@@ -2,12 +2,12 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>IDE v8.5: Fixed Folder Expansion</title>
+    <title>IDE v8.6: Drag & Drop Enabled</title>
     <style>
         :root {
             --primary: #1877f2; --border: #ddd; --header-bg: #1877f2; --header-text: #fff;
             --sidebar-bg: #fff; --sidebar-text: #333; --editor-bg: #282c34; --editor-text: #abb2bf;
-            --line-num-bg: #21252b; --line-num-text: #636d83; --success: #42b72a; --danger: #f48771; --warn: #eab308;
+            --line-num-bg: #21252b; --line-num-text: #636d83; --success: #42b72a; --danger: #f48771;
         }
         body.midnight { --editor-bg: #000; --sidebar-bg: #111; --sidebar-text: #0f0; --border: #333; --header-bg: #000; --header-text: #0f0; --line-num-bg: #000; --line-num-text: #0f0; }
         body.light { --editor-bg: #fff; --editor-text: #222; --sidebar-bg: #f8f9fa; --border: #ccc; --line-num-bg: #f0f0f0; --line-num-text: #999; }
@@ -25,20 +25,18 @@
         .pane { display: none; flex: 1; flex-direction: column; padding: 12px; overflow-y: auto; }
         .pane.active { display: flex; }
 
-        /* Tree UI Fixed */
+        /* Tree UI & Drag Styles */
         .tree-root-node { font-weight: bold; color: var(--primary); margin-bottom: 5px; font-size: 11px; padding: 0 8px; }
         .tree-item { margin-left: 18px; border-left: 1px solid rgba(0,0,0,0.1); }
-        .tree-row { display: flex; align-items: center; padding: 6px 8px; border-radius: 4px; cursor: pointer; font-size: 13px; user-select: none; }
+        .tree-row { display: flex; align-items: center; padding: 6px 8px; border-radius: 4px; cursor: pointer; font-size: 13px; user-select: none; border: 1px solid transparent; }
         .tree-row:hover { background: rgba(0,0,0,0.05); }
         .tree-row.active { background: #e7f3ff; color: var(--primary); font-weight: 600; }
-        .folder-icon { margin-right: 6px; font-size: 10px; width: 12px; display: inline-block; transition: transform 0.1s; }
-        .empty-msg { font-size: 11px; color: #999; padding: 4px 0 4px 20px; font-style: italic; }
-
-        /* DB & Tools */
-        .db-entry { background: rgba(0,0,0,0.03); border: 1px solid var(--border); border-radius: 4px; padding: 8px; margin-bottom: 8px; }
-        .db-input { width: 100%; padding: 6px; margin-bottom: 6px; border: 1px solid #ddd; border-radius: 4px; font-size: 11px; box-sizing: border-box; }
         
-        /* Editor */
+        /* Drag Targets */
+        .drag-over { background: rgba(24, 119, 242, 0.1); border: 1px dashed var(--primary); }
+        .folder-icon { margin-right: 6px; font-size: 10px; width: 12px; display: inline-block; transition: transform 0.1s; }
+
+        /* Workspace */
         .workspace { flex: 1; display: grid; grid-template-rows: 1fr 140px; background: #ccc; }
         .panes { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; height: 100%; }
         .editor-container { position: relative; background: var(--editor-bg); display: flex; overflow: hidden; }
@@ -61,7 +59,7 @@
 <body>
 
 <header>
-    <div>Local IDE v8.5 (OPFS)</div>
+    <div>Local IDE v8.6 (OPFS)</div>
     <div id="file-label" style="font-size: 11px; opacity: 0.7;">System Ready</div>
 </header>
 
@@ -70,7 +68,6 @@
     <button class="btn-red" id="wipeBtn" disabled>Wipe</button>
     <div style="width:1px; height:20px; background:#ddd; margin:0 5px;"></div>
     <button class="btn-run" id="runBtn" disabled>▶ Run</button>
-    <button id="auditBtn" disabled>🛡️ Audit</button>
     <button id="saveBtn" disabled>Save</button>
     <button id="newFileBtn" disabled>+ File</button>
     <button id="newFolderBtn" disabled>+ Folder</button>
@@ -81,28 +78,12 @@
     <div class="sidebar">
         <div class="tab-row">
             <div class="tab active" onclick="switchTab('explorer')">FILES</div>
-            <div class="tab" onclick="switchTab('db')">DB</div>
-            <div class="tab" onclick="switchTab('network')">NET</div>
             <div class="tab" onclick="switchTab('tools')">TOOLS</div>
         </div>
         
         <div id="explorerPane" class="pane active">
             <div id="tree-root-header" class="tree-root-node"></div>
             <div id="tree-root"></div>
-        </div>
-
-        <div id="dbPane" class="pane">
-            <div style="font-weight:bold; font-size:11px; margin-bottom:10px;">VULNERABILITY DB</div>
-            <input type="text" id="dbTitle" class="db-input" placeholder="Title...">
-            <input type="text" id="dbDesc" class="db-input" placeholder="Description...">
-            <input type="text" id="dbMit" class="db-input" placeholder="Fix...">
-            <button class="btn-blue" id="addDbEntryBtn" style="width:100%;">Add Entry</button>
-            <div id="dbList" style="margin-top:10px;"></div>
-        </div>
-
-        <div id="networkPane" class="pane">
-            <div style="font-size: 10px; color: #888; margin-bottom: 10px;">TRAFFIC MONITOR</div>
-            <div id="netList"></div>
         </div>
 
         <div id="toolsPane" class="pane">
@@ -117,17 +98,19 @@
                 <div id="line-numbers">1</div>
                 <div class="editor-stack">
                     <pre id="highlighting"><code id="h-content"></code></pre>
-                    <textarea id="editor" spellcheck="false" placeholder="Mount OPFS to begin."></textarea>
+                    <textarea id="editor" spellcheck="false" placeholder="Initialize OPFS to start..."></textarea>
                 </div>
             </div>
             <iframe id="preview" style="width:100%; height:100%; border:none; background:white;"></iframe>
         </div>
-        <div id="console">> IDE Ready. Click Initialize.</div>
+        <div id="console">> IDE Ready. Drag & Drop Engine loaded.</div>
     </div>
 </div>
 
 <script>
     let rootHandle, currentFileHandle;
+    let draggedItem = null; // Stores data about item being dragged
+    
     const editor = document.getElementById('editor');
     const hContent = document.getElementById('h-content');
     const consoleEl = document.getElementById('console');
@@ -146,15 +129,37 @@
     }
     function setTheme(t) { document.body.className = t; }
 
-    // --- OPFS & TREE LOGIC ---
+    // --- DRAG & DROP ENGINE ---
+    
+    // Recursive Move: Copy content, then delete original
+    async function moveEntry(name, sourceDir, destDir, kind) {
+        if (kind === 'file') {
+            const fileHandle = await sourceDir.getFileHandle(name);
+            const file = await fileHandle.getFile();
+            const newHandle = await destDir.getFileHandle(name, { create: true });
+            const writable = await newHandle.createWritable();
+            await writable.write(file);
+            await writable.close();
+            await sourceDir.removeEntry(name);
+        } else if (kind === 'directory') {
+            const dirHandle = await sourceDir.getDirectoryHandle(name);
+            const newDirHandle = await destDir.getDirectoryHandle(name, { create: true });
+            for await (const entry of dirHandle.values()) {
+                await moveEntry(entry.name, dirHandle, newDirHandle, entry.kind);
+            }
+            await sourceDir.removeEntry(name, { recursive: true });
+        }
+    }
+
+    // --- TREE BUILDER (With Drag Listeners) ---
     async function buildTree(handle, container) {
         container.innerHTML = "";
         const entries = [];
         for await (const e of handle.values()) entries.push(e);
         entries.sort((a,b) => (b.kind==='directory') - (a.kind==='directory') || a.name.localeCompare(b.name));
         
-        if (entries.length === 0) {
-            container.innerHTML = `<div class="empty-msg">(empty)</div>`;
+        if(entries.length === 0) {
+            container.innerHTML = `<div style="font-size:10px; color:#999; padding-left:20px;">(empty)</div>`;
             return;
         }
 
@@ -162,6 +167,36 @@
             const row = document.createElement('div');
             row.className = `tree-row ${currentFileHandle?.name === entry.name ? 'active' : ''}`;
             
+            // Drag Properties
+            row.draggable = true;
+            row.ondragstart = (e) => {
+                e.stopPropagation();
+                draggedItem = { name: entry.name, kind: entry.kind, parent: handle };
+                e.dataTransfer.effectAllowed = 'move';
+                log(`Dragging ${entry.name}...`);
+            };
+
+            // Drop Properties (Folders Only)
+            if (entry.kind === 'directory') {
+                row.ondragover = (e) => { e.preventDefault(); e.stopPropagation(); row.classList.add('drag-over'); };
+                row.ondragleave = (e) => { e.stopPropagation(); row.classList.remove('drag-over'); };
+                row.ondrop = async (e) => {
+                    e.preventDefault(); e.stopPropagation(); row.classList.remove('drag-over');
+                    if (!draggedItem) return;
+                    if (draggedItem.name === entry.name && draggedItem.parent === handle) return; // Drop on self
+                    
+                    log(`Moving ${draggedItem.name} to ${entry.name}...`);
+                    try {
+                        const destDir = await handle.getDirectoryHandle(entry.name);
+                        await moveEntry(draggedItem.name, draggedItem.parent, destDir, draggedItem.kind);
+                        await buildTree(rootHandle, document.getElementById('tree-root'));
+                        log("Move successful.", "var(--success)");
+                    } catch (err) { log("Move failed: " + err.message, "var(--danger)"); }
+                    draggedItem = null;
+                };
+            }
+
+            // Tree Logic
             if (entry.kind === 'directory') {
                 row.innerHTML = `<span class="folder-icon">▶</span> 📁 ${entry.name}`;
                 const sub = document.createElement('div'); 
@@ -169,11 +204,12 @@
                 sub.style.display = 'none';
                 
                 row.onclick = (e) => {
-                    e.stopPropagation(); // Stop bubbling
+                    e.stopPropagation();
                     const icon = row.querySelector('.folder-icon');
                     if (sub.style.display === 'none') {
                         sub.style.display = 'block';
                         icon.style.transform = 'rotate(90deg)';
+                        buildTree(entry, sub); // Build sub-tree on expand
                     } else {
                         sub.style.display = 'none';
                         icon.style.transform = 'rotate(0deg)';
@@ -181,7 +217,6 @@
                 };
                 container.appendChild(row); 
                 container.appendChild(sub);
-                await buildTree(entry, sub);
             } else {
                 row.innerHTML = `📄 ${entry.name}`;
                 row.onclick = (e) => { e.stopPropagation(); loadFile(entry); };
@@ -190,58 +225,57 @@
         }
     }
 
-    // --- MAIN INIT ---
+    // --- SYSTEM INIT ---
     document.getElementById('mountBtn').onclick = async () => {
         try {
             rootHandle = await navigator.storage.getDirectory();
             document.getElementById('tree-root-header').textContent = `📁 OPFS://ROOT`;
+            
+            // Allow Drop on Root
+            const rootHeader = document.getElementById('tree-root-header');
+            rootHeader.ondragover = (e) => { e.preventDefault(); rootHeader.style.background = '#e7f3ff'; };
+            rootHeader.ondragleave = () => { rootHeader.style.background = 'transparent'; };
+            rootHeader.ondrop = async (e) => {
+                e.preventDefault(); rootHeader.style.background = 'transparent';
+                if (!draggedItem || draggedItem.parent === rootHandle) return;
+                try {
+                    await moveEntry(draggedItem.name, draggedItem.parent, rootHandle, draggedItem.kind);
+                    await buildTree(rootHandle, document.getElementById('tree-root'));
+                    log("Moved to Root.", "var(--success)");
+                } catch(err) { log("Root move failed.", "var(--danger)"); }
+            };
+
             await buildTree(rootHandle, document.getElementById('tree-root'));
-            enableControls();
-            log("OPFS Mounted. Storage Ready.", "var(--success)");
-        } catch(e) { log("Error: " + e.message, "var(--danger)"); }
+            ['newFileBtn','newFolderBtn','backupBtn','wipeBtn','saveBtn','runBtn'].forEach(i=>document.getElementById(i).disabled=false);
+            log("OPFS Mounted.", "var(--success)");
+        } catch(e) { log("OPFS Error: " + e.message, "var(--danger)"); }
     };
 
+    // --- STANDARD FILE OPS ---
     async function loadFile(h) {
         currentFileHandle = h;
-        editor.value = sanitize(await (await h.getFile()).text());
+        editor.value = (await (await h.getFile()).text()).replace(/<span class="t-[a-z]+">/gi,"").replace(/<\/span>/gi,"");
         hContent.innerHTML = applyHighlight(editor.value) + "\n";
         document.getElementById('file-label').textContent = `Editing: ${h.name}`;
         lineNumbers.innerHTML = Array.from({length: editor.value.split('\n').length}, (_, i) => i + 1).join('<br>');
     }
 
-    // --- HELPERS ---
-    function enableControls() {
-        ['newFileBtn','newFolderBtn','backupBtn','auditBtn','wipeBtn','saveBtn','runBtn'].forEach(i=>document.getElementById(i).disabled=false);
-    }
-    
-    function sanitize(text) { return text.replace(/<span class="t-[a-z]+">/gi, "").replace(/<\/span>/gi, "").replace(/##[A-Z_]+##/g, ""); }
-    
     function applyHighlight(text) {
         let code = text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
         code = code.replace(/(&lt;\/?[a-z1-6!]+)/gi, '##T_S##$1##T_E##');
         code = code.replace(/(\s)([a-z-]+)(?==)/gi, '$1##A_S##$2##A_E##');
         code = code.replace(/"(.*?)"/g, '##S_S##"$1"##S_E##');
-        code = code.replace(/\b(let|const|var|function|return|if|else|class|async|await)\b/g, '##K_S##$1##K_E##');
+        code = code.replace(/\b(let|const|var|function|return|if|else|class)\b/g, '##K_S##$1##K_E##');
         return code.replace(/##T_S##/g, '<span class="t-tag">').replace(/##T_E##/g, '</span>')
                    .replace(/##A_S##/g, '<span class="t-attr">').replace(/##A_E##/g, '</span>')
                    .replace(/##S_S##/g, '<span class="t-str">').replace(/##S_E##/g, '</span>')
                    .replace(/##K_S##/g, '<span class="t-key">').replace(/##K_E##/g, '</span>');
     }
 
-    // --- BUTTONS ---
     document.getElementById('runBtn').onclick = () => {
-        const hook = `<script>(function(){const netLog=(d)=>window.parent.postMessage({type:'network',...d},'*');const originalFetch=window.fetch;window.fetch=async(...args)=>{const u=args[0]instanceof Request?args[0].url:args[0];const m=(args[1]&&args[1].method)||'GET';try{const r=await originalFetch.apply(this,args);netLog({url:u,method:m,status:r.status});return r}catch(e){netLog({url:u,method:m,status:'BLOCKED'});throw e}}})();<\/script>`;
-        const blob = new Blob([`<html><body>${hook}${sanitize(editor.value)}</body></html>`], {type: 'text/html'});
-        document.getElementById('preview').src = URL.createObjectURL(blob);
+        const hook = `<script>const send=(m,a)=>window.parent.postMessage({type:'console',method:m,args:Array.from(a).map(String)},'*');console.log=function(){send('log',arguments)};console.error=function(){send('error',arguments)};window.onerror=(m)=>send('error',[m]);<\/script>`;
+        document.getElementById('preview').src = URL.createObjectURL(new Blob([hook + editor.value], {type: 'text/html'}));
     };
-
-    window.addEventListener('message', (e) => {
-        if(e.data.type === 'network') {
-            const d = document.createElement('div'); d.className='net-item'; 
-            d.innerHTML = `<b style="color:#1877f2">${e.data.method}</b> ${e.data.url} (${e.data.status})`;
-            document.getElementById('netList').prepend(d);
-        }
-    });
 
     document.getElementById('saveBtn').onclick = async () => {
         const w = await currentFileHandle.createWritable();
@@ -258,6 +292,10 @@
         if(n) { await rootHandle.getFileHandle(n, {create:true}); await buildTree(rootHandle, document.getElementById('tree-root')); }
     };
 
+    document.getElementById('wipeBtn').onclick = async () => {
+        if(confirm("Wipe ALL data?")) { for await (const e of rootHandle.values()) await rootHandle.removeEntry(e.name,{recursive:true}); await buildTree(rootHandle,document.getElementById('tree-root')); }
+    };
+
     document.getElementById('backupBtn').onclick = async () => {
         const zip = new JSZip();
         async function walk(h, folder) {
@@ -268,15 +306,12 @@
         }
         await walk(rootHandle, zip);
         const blob = await zip.generateAsync({type: "blob"});
-        const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = "opfs_backup.zip"; a.click();
-    };
-
-    document.getElementById('wipeBtn').onclick = async () => {
-        if(confirm("Delete ALL files?")) { for await (const e of rootHandle.values()) await rootHandle.removeEntry(e.name,{recursive:true}); await buildTree(rootHandle,document.getElementById('tree-root')); }
+        const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = "opfs_project.zip"; a.click();
     };
 
     editor.oninput = () => { hContent.innerHTML = applyHighlight(editor.value) + "\n"; };
     editor.onscroll = () => { lineNumbers.scrollTop = editor.scrollTop; document.getElementById('highlighting').scrollTop = editor.scrollTop; };
+    window.addEventListener('message', (e) => { if(e.data.type==='console') log(e.data.args.join(' '), e.data.method==='error'?'var(--danger)':null); });
 </script>
 </body>
 </html>
